@@ -18,6 +18,9 @@ public:
     void Input(int vkey, bool state);
     bool GetInput(int vkey) const;
     glm::vec2 GetMousePosition() const;
+    bool HasFocus() { return gameFocus; }
+
+    void UpdateProjection() const;
 
     static Minecraft& GetInstance();
     bool IsRunning() const volatile { return running; }

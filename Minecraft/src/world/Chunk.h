@@ -10,6 +10,7 @@ class World;
 
 #define MINECRAFT_CHUNK_SIZE 16
 #define MINECRAFT_CHUNK_VBO_COMPONENT_COUNT 3
+#define MINECRAFT_CHUNK_VBO_COUNT 1
 
 class Chunk {
 public:
@@ -23,16 +24,19 @@ public:
 
     // OpenGL
     void Update();
-    unsigned int GetVBOID() const { return vboID; }
+    unsigned int GetVBOID(int vbo) const { return vbos[vbo]; };
     unsigned int GetIBOID() const { return iboID; }
     unsigned int GetVAOID() const { return vaoID; }
     unsigned int GetCount() const { return indices.size(); }
     void AddFace(const std::vector<float>& faceVertices, const Block::Position& localPosition);
 
+    void FreeMemory();
+
 private:
     void Remesh();
     void TryAddFace(const std::vector<float>& faceVertices, const Block::Position& localPosition, const Block::Position& nextPosition);
     bool ShouldMakeBlockFaceAdjacentTo(const Block::Position &position);
+    void ShrinkVectors();
 
 private:
     // Block states
@@ -42,10 +46,11 @@ private:
     bool needsRebuild;
 
     // OpenGL
-    unsigned int vaoID, vboID, iboID, count;
-    unsigned int indicesIndex;
+    unsigned int vaoID, iboID, count;
+    unsigned int vbos[16];
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
+    unsigned int indicesIndex;
 };
 
 #endif //MINECRAFT_CHUNK_H

@@ -15,22 +15,28 @@
 // --------------------------------------------------------------
 Chunk::Chunk(const World &world)
         : count(0) {
-    // Generate VBO
-    glGenBuffers(1, &vboID);
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+    // Generate VBOs
+    memset(vbos, -1, 16 * sizeof(unsigned int));
+    for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
+        glGenBuffers(1, &vbos[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[i]);
+        glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+    }
 
     // Generate IBO
     glGenBuffers(1, &iboID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
 
     // Generate VAO and assign VBOs to slot 0 of it
     glGenVertexArrays(1, &vaoID);
     glBindVertexArray(vaoID);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, MINECRAFT_CHUNK_VBO_COMPONENT_COUNT, GL_FLOAT, false, 0, nullptr);
-    glDisableVertexAttribArray(0);
+    for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[i]);
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(i, MINECRAFT_CHUNK_VBO_COMPONENT_COUNT, GL_FLOAT, false, 0, nullptr);
+        glDisableVertexAttribArray(i);
+    }
 
     // Unbind stuff
     glBindVertexArray(0);
@@ -39,13 +45,10 @@ Chunk::Chunk(const World &world)
 
     // Update chunk itself
     memset(blocks, 0, MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * sizeof(Block::State));
-    SetChunkState(Block::Position(0, 0, 0), Block::State(1));
-    SetChunkState(Block::Position(3, 3, 4), Block::State(1));
-    SetChunkState(Block::Position(3, 3, 5), Block::State(1));
-    SetChunkState(Block::Position(3, 3, 6), Block::State(1));
-    SetChunkState(Block::Position(3, 3, 7), Block::State(1));
-    SetChunkState(Block::Position(3, 4, 7), Block::State(1));
-    SetChunkState(Block::Position(3, 5, 7), Block::State(1));
+    for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++)
+        for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++)
+            for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++)
+                SetChunkState(Block::Position(x, y, z), Block::State(rand() % 4));
 
     needsRebuild = true;
     Update();
@@ -55,12 +58,18 @@ Chunk::Chunk(const World &world)
 //  Destructor: Clean up
 // --------------------------------------------------------------
 Chunk::~Chunk() {
-    // Delete VBO and VAO
-    glDeleteBuffers(1, &vboID);
+    // Release resources
+    FreeMemory();
+
+    // Delete VBOs and VAO
+    for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
+        glDeleteBuffers(1, &vbos[i]);
+    }
+
     glDeleteBuffers(1, &iboID);
     glDeleteVertexArrays(1, &vaoID);
 
-    // Make sure no VAO or VBO is bound(heaven forbid using a deleted buffer)
+    // Make sure no VAO or VBO is bound (heaven forbid using a deleted buffer)
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -85,9 +94,9 @@ void Chunk::SetChunkState(const Block::Position &position, Block::State state) {
 //  specified position
 // --------------------------------------------------------------
 Block::State Chunk::GetChunkState(const Block::Position &position) const {
-    if ((position.x > 16 || position.x < 0) ||
-        (position.y > 16 || position.y < 0) ||
-        (position.z > 16 || position.z < 0)) {
+    if ((position.x > MINECRAFT_CHUNK_SIZE || position.x < 0) ||
+        (position.y > MINECRAFT_CHUNK_SIZE || position.y < 0) ||
+        (position.z > MINECRAFT_CHUNK_SIZE || position.z < 0)) {
         Block::State air;
         return air;
     }
@@ -117,8 +126,7 @@ void Chunk::Remesh() {
     std::cout << "Remeshing chunk " << std::hex << this << "..." << std::endl;
 #endif
 
-    vertices.clear();
-    indices.clear();
+    FreeMemory();
     indicesIndex = 0;
 
     for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++) {
@@ -147,7 +155,7 @@ void Chunk::Remesh() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // Load vertices
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -156,13 +164,20 @@ void Chunk::Remesh() {
 }
 
 void
-Chunk::TryAddFace(const std::vector<float> &faceVertices, const Block::Position &localPosition, const Block::Position &nextPosition) {
+Chunk::TryAddFace(const std::vector<float> &faceVertices, const Block::Position &localPosition,
+                  const Block::Position &nextPosition) {
     if (ShouldMakeBlockFaceAdjacentTo(nextPosition)) {
         AddFace(faceVertices, localPosition);
     }
 }
 
 bool Chunk::ShouldMakeBlockFaceAdjacentTo(const Block::Position &position) {
+    if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 1) ||
+        (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 1) ||
+        (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 1)) {
+        return true;
+    }
+
     return GetChunkState(position).id == 0;
 }
 
@@ -183,4 +198,15 @@ void Chunk::AddFace(const std::vector<float> &faceVertices, const Block::Positio
     });
 
     indicesIndex += 4;
+}
+
+void Chunk::ShrinkVectors() {
+    vertices.shrink_to_fit();
+    indices.shrink_to_fit();
+}
+
+void Chunk::FreeMemory() {
+    vertices.clear();
+    indices.clear();
+    ShrinkVectors();
 }

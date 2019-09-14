@@ -36,14 +36,9 @@ Minecraft::~Minecraft() {
 int Minecraft::Run() {
     // Start game
     running = true;
+    gameFocus = true;
     int i = StartGame();
     if (!i) return i;
-
-    // Initialize stuff
-    masterRenderer = new RenderMaster(glm::perspective(glm::radians(80.0f), 1440.0f / 720.0f, 0.01f, 1000.0f));
-    world = new World;
-
-    gameFocus = true;
 
     sf::Font font;
     font.loadFromFile("arial.ttf");
@@ -64,10 +59,7 @@ int Minecraft::Run() {
                     Shutdown();
                     return false;
                 case sf::Event::Resized:
-                    masterRenderer->SubmitProjection(
-                            glm::perspective(glm::radians(80.0f), ((float) event.size.width) / ((float) event.size.height), 0.01f,
-                                             1000.0f));
-                    glViewport(0, 0, (float) event.size.width, (float) event.size.height);
+                    UpdateProjection();
                     std::cout << "Window resized to " << (float) event.size.width << " * " << (float) event.size.height
                               << "." << std::endl;
                     break;
@@ -160,6 +152,13 @@ glm::vec2 Minecraft::GetMousePosition() const {
     return mousePosition;
 }
 
+void Minecraft::UpdateProjection() const {
+    masterRenderer->SubmitProjection(
+            glm::perspective(glm::radians(80.0f), ((float) window->getSize().x) / ((float) window->getSize().y), 0.01f,
+                             1000.0f));
+    glViewport(0, 0, (float) window->getSize().x, (float) window->getSize().y);
+}
+
 // --------------------------------------------------------------
 //  Initialize game window, pixel format,
 //  OpenGL and modern OpenGL
@@ -188,6 +187,19 @@ int Minecraft::StartGame() {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, nullptr);
 #endif
+
+    // Welcome message
+    std::cout << "==============================================" << std::endl;
+    std::cout << "                MINECRAFT C++                 " << std::endl;
+    std::cout << "      https://github.com/jlagarespo/mcpp      " << std::endl;
+    std::cout << "==============================================" << std::endl;
+
+    // Initialize stuff
+    world = new World;
+    masterRenderer = new RenderMaster;
+
+    // Make sure we are in a consistent state
+    UpdateProjection();
 }
 
 // --------------------------------------------------------------

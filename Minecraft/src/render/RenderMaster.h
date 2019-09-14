@@ -10,7 +10,7 @@ class World;
 
 class RenderMaster {
 public:
-    RenderMaster(glm::mat4 projectionMatrix);
+    RenderMaster();
     ~RenderMaster();
 
     void RenderWorld(const World &world);
