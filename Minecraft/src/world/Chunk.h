@@ -10,7 +10,7 @@ class World;
 
 #define MINECRAFT_CHUNK_SIZE 16
 #define MINECRAFT_CHUNK_VBO_COMPONENT_COUNT 3
-#define MINECRAFT_CHUNK_VBO_COUNT 1
+#define MINECRAFT_CHUNK_VBO_COUNT 2
 
 class Chunk {
 public:
@@ -28,13 +28,16 @@ public:
     unsigned int GetIBOID() const { return iboID; }
     unsigned int GetVAOID() const { return vaoID; }
     unsigned int GetCount() const { return indices.size(); }
-    void AddFace(const std::vector<float>& faceVertices, const Block::Position& localPosition);
+    void AddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,
+                        const Block::Position &localPosition);
 
     void FreeMemory();
 
 private:
     void Remesh();
-    void TryAddFace(const std::vector<float>& faceVertices, const Block::Position& localPosition, const Block::Position& nextPosition);
+
+    void TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,
+                    const Block::Position &localPosition, const Block::Position &nextPosition);
     bool ShouldMakeBlockFaceAdjacentTo(const Block::Position &position);
     void ShrinkVectors();
 
@@ -50,6 +53,7 @@ private:
     unsigned int vbos[16];
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
+    std::vector<float> textureCoords;
     unsigned int indicesIndex;
 };
 

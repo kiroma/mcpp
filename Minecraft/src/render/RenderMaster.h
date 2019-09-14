@@ -3,6 +3,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "Texture.h"
 
 class World;
 
@@ -18,6 +19,9 @@ public:
 private:
     // Shaders
     Shader *shaderSolidBlock;
+
+    // Textures
+    Texture *textureSolidBlocks;
 
     // Camera
     Camera *camera;

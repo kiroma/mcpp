@@ -2,6 +2,8 @@
 #define MINECRAFT_BLOCK_H
 
 #include <glm.hpp>
+#include <vector>
+#include <string>
 
 namespace Block {
     struct Position : glm::i64vec3 {
@@ -22,6 +24,20 @@ namespace Block {
 
         short id;
     };
+
+    struct Block {
+        short id;
+        const std::vector<float> *faceVertices;
+        const std::vector<float> *textureCoordinates;
+        const char *displayName;
+    };
+
+    namespace Database {
+        void Initialize();
+        void RegisterBlock(int id, const std::vector<float> *faceVertices,
+                           const std::vector<float> *textureCoordinates, const char *displayName);
+        Block& GetBlock(int id);
+    }
 }
 
 #endif //MINECRAFT_BLOCK_H

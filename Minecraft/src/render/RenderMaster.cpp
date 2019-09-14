@@ -8,7 +8,12 @@
 
 
 RenderMaster::RenderMaster() {
-    shaderSolidBlock = new Shader("../res/solid/vertex.glsl", "../res/solid/fragment.glsl");
+    // Load textures and shaders
+    textureSolidBlocks = new Texture("../res/textures/atlas.png");
+    shaderSolidBlock = new Shader("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
+    shaderSolidBlock->Uniform1f("main_texture", glm::vec1(0));
+
+    // Load camera
     camera = new Camera;
 }
 
@@ -40,26 +45,34 @@ void RenderMaster::SubmitProjection(glm::mat4 projection) const {
 void RenderMaster::RenderWorldPass(int pass, const World &world) {
     switch (pass) {
         case 0: {
+            // Load shader
             camera->Update();
             shaderSolidBlock->Enable();
             shaderSolidBlock->UniformMat4("view_matrix", camera->GenerateViewMatrix());
 
+            // Load models
             glBindVertexArray(world.chunk->GetVAOID());
             for (int i = 0; i < 16; i++) {
                 if (world.chunk->GetVBOID(i) != -1)
                     glEnableVertexAttribArray(i);
             }
 
+            // Bind textures
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, textureSolidBlocks->GetID());
+
             // The call of truth
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world.chunk->GetIBOID());
             glDrawElements(GL_TRIANGLES, world.chunk->GetCount(), GL_UNSIGNED_INT, nullptr);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+            // Disable models
             for (int i = 0; i < 16; i++) {
                 if (world.chunk->GetVBOID(i) != -1)
                     glDisableVertexAttribArray(i);
             }
 
+            // Unbind stuff
             glBindVertexArray(0);
             shaderSolidBlock->Disable();
 

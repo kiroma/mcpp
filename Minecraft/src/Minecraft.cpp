@@ -2,6 +2,7 @@
 
 #include "render/RenderMaster.h"
 #include "world/World.h"
+#include "world/Block.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -107,6 +108,8 @@ int Minecraft::Run() {
         glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
 
+        glEnable(GL_TEXTURE_2D);
+
         glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -116,6 +119,7 @@ int Minecraft::Run() {
         glDepthMask(false);
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
+        glDisable(GL_TEXTURE_2D);
 
         glPopMatrix();
 
@@ -195,6 +199,7 @@ int Minecraft::StartGame() {
     std::cout << "==============================================" << std::endl;
 
     // Initialize stuff
+    Block::Database::Initialize();
     world = new World;
     masterRenderer = new RenderMaster;
 
