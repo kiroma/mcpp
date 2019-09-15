@@ -6,12 +6,18 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_definitions(GLEW_STATIC)
 add_compile_definitions(MINECRAFT_DEBUG)
 
-include_directories(../Common/lib/glew-2.1.0/include)
-include_directories(../Common/lib/glm/glm)
-include_directories(../Common/lib/sfml/include)
-include_directories(../Common/lib/stb)
+if (LINUX)
+    # NOT TESTED: If you are compiling for linux, then you'll probably have to
+    # manualy add compiler arguments for linking with other libraries.
+    include_directories(/usr/include/glm)
+endif (LINUX)
 
 if (WIN32)
+    include_directories(../Common/lib/glew-2.1.0/include)
+    include_directories(../Common/lib/glm/glm)
+    include_directories(../Common/lib/sfml/include)
+    include_directories(../Common/lib/stb)
+
     link_directories(../Common/lib/glew-2.1.0/lib/Release/Win32)
     link_directories(../Common/lib/sfml/lib/)
     link_libraries(mingw32)

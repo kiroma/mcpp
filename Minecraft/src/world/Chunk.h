@@ -3,7 +3,7 @@
 
 class World;
 
-#include "block.h"
+#include "Block.h"
 
 #include <vector>
 #include <vec3.hpp>

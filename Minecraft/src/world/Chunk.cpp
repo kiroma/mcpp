@@ -200,9 +200,9 @@ void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector
 
 bool Chunk::ShouldMakeBlockFaceAdjacentTo(const Block::Position &position)
 {
-    if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 1) ||
-        (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 1) ||
-        (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 1)) {
+    if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 0) ||
+        (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 0) ||
+        (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 0)) {
         return true;
     }
 
