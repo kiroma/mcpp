@@ -9,7 +9,8 @@ class World;
 
 #define MC_RENDER_PASSES 2
 
-class RenderMaster {
+class RenderMaster
+{
 public:
     RenderMaster();
     ~RenderMaster();
@@ -26,7 +27,7 @@ private:
     // Camera
     Camera *camera;
 
-    void RenderWorldPass(int pass, const World& world);
+    void RenderWorldPass(int pass, const World &world);
 };
 
 #endif //MINECRAFT_RENDERMASTER_H

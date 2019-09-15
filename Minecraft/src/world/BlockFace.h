@@ -6,8 +6,10 @@
 
 #define BLOCK_SIZE 1
 
-namespace BlockFace {
-    typedef enum {
+namespace BlockFace
+{
+    typedef enum
+    {
         FRONT,
         BACK,
         LEFT,

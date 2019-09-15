@@ -41,7 +41,8 @@ const std::vector<float> defaultFaceTextureCoords[3] = {
         }
 };
 
-void Block::Database::Initialize() {
+void Block::Database::Initialize()
+{
     // Clear some space for blocks
     memset(blocks, 0, sizeof(blocks));
 
@@ -65,7 +66,8 @@ void Block::Database::Initialize() {
 }
 
 void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertices,
-                                    const std::vector<float> *textureCoordinates, const char *displayName) {
+                                    const std::vector<float> *textureCoordinates, const char *displayName)
+{
     Block *block = (Block *) malloc(sizeof(Block));
     block->id = id;
     block->displayName = displayName;
@@ -80,6 +82,7 @@ void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertic
     blocks[id] = block;
 }
 
-Block::Block& Block::Database::GetBlock(int id) {
+Block::Block &Block::Database::GetBlock(int id)
+{
     return *blocks[id];
 }

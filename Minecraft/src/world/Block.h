@@ -5,38 +5,46 @@
 #include <vector>
 #include <string>
 
-namespace Block {
-    struct Position : glm::i64vec3 {
-        Position(int x, int y, int z) {
+namespace Block
+{
+    struct Position : glm::i64vec3
+    {
+        Position(int x, int y, int z)
+        {
             this->x = x;
             this->y = y;
             this->z = z;
         }
     };
 
-    struct State {
-        State() : State(0) {
+    struct State
+    {
+        State() : State(0)
+        {
         }
 
-        State(short id) {
+        State(short id)
+        {
             this->id = id;
         }
 
         short id;
     };
 
-    struct Block {
+    struct Block
+    {
         short id;
         const std::vector<float> *faceVertices;
         const std::vector<float> *textureCoordinates;
         const char *displayName;
     };
 
-    namespace Database {
+    namespace Database
+    {
         void Initialize();
         void RegisterBlock(int id, const std::vector<float> *faceVertices,
                            const std::vector<float> *textureCoordinates, const char *displayName);
-        Block& GetBlock(int id);
+        Block &GetBlock(int id);
     }
 }
 

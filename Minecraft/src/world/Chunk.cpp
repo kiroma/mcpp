@@ -14,7 +14,8 @@
 //  Constructor: Allocate resources
 // --------------------------------------------------------------
 Chunk::Chunk(const World &world)
-        : count(0) {
+        : count(0)
+{
     // Generate VBOs
     memset(vbos, -1, 16 * sizeof(unsigned int));
     for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
@@ -44,7 +45,7 @@ Chunk::Chunk(const World &world)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // Update chunk itself
-    srand((unsigned int)this);
+    srand((unsigned int) this);
     memset(blocks, 0, MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * sizeof(Block::State));
     for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++)
         for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++)
@@ -58,7 +59,8 @@ Chunk::Chunk(const World &world)
 // --------------------------------------------------------------
 //  Destructor: Clean up
 // --------------------------------------------------------------
-Chunk::~Chunk() {
+Chunk::~Chunk()
+{
     // Release resources
     FreeMemory();
 
@@ -80,7 +82,8 @@ Chunk::~Chunk() {
 //  Set the state of a block in the chunk at the
 //  specified position
 // --------------------------------------------------------------
-void Chunk::SetChunkState(const Block::Position &position, Block::State state) {
+void Chunk::SetChunkState(const Block::Position &position, Block::State state)
+{
     if ((position.x > MINECRAFT_CHUNK_SIZE || position.x < 0) ||
         (position.y > MINECRAFT_CHUNK_SIZE || position.y < 0) ||
         (position.z > MINECRAFT_CHUNK_SIZE || position.z < 0))
@@ -94,7 +97,8 @@ void Chunk::SetChunkState(const Block::Position &position, Block::State state) {
 //  Get the state of a block in the chunk at the
 //  specified position
 // --------------------------------------------------------------
-Block::State Chunk::GetChunkState(const Block::Position &position) const {
+Block::State Chunk::GetChunkState(const Block::Position &position) const
+{
     if ((position.x > MINECRAFT_CHUNK_SIZE || position.x < 0) ||
         (position.y > MINECRAFT_CHUNK_SIZE || position.y < 0) ||
         (position.z > MINECRAFT_CHUNK_SIZE || position.z < 0)) {
@@ -110,7 +114,8 @@ Block::State Chunk::GetChunkState(const Block::Position &position) const {
 //      - Rebuild mesh if needed
 //      - Update blocks on it
 // --------------------------------------------------------------
-void Chunk::Update() {
+void Chunk::Update()
+{
     if (needsRebuild) {
         Remesh();
         needsRebuild = false;
@@ -120,7 +125,8 @@ void Chunk::Update() {
 // --------------------------------------------------------------
 //  Reconstruct chunk mesh based on the blocks it contains
 // --------------------------------------------------------------
-void Chunk::Remesh() {
+void Chunk::Remesh()
+{
     using namespace BlockFace;
 
 #ifdef MINECRAFT_DEBUG
@@ -135,23 +141,31 @@ void Chunk::Remesh() {
             for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++) {
                 const Block::Position pos(x, y, z);
                 const Block::State state = GetChunkState(pos);
-                const Block::Block& block = Block::Database::GetBlock(state.id);
+                const Block::Block &block = Block::Database::GetBlock(state.id);
 
                 if (state.id == 0) {
                     continue;
                 }
 
-                for(int i = 0; i < 2 * 6; i++) {
+                /*
+                for (int i = 0; i < 2 * 6; i++) {
                     std::cout << block.textureCoordinates[1][i] << ", ";
                 }
                 std::cout << std::endl;
-
-                TryAddFace(block.faceVertices[0], block.textureCoordinates[0], pos, Block::Position(pos.x + 1, pos.y, pos.z));
-                TryAddFace(block.faceVertices[1], block.textureCoordinates[0], pos, Block::Position(pos.x - 1, pos.y, pos.z));
-                TryAddFace(block.faceVertices[2], block.textureCoordinates[1], pos, Block::Position(pos.x, pos.y + 1, pos.z));
-                TryAddFace(block.faceVertices[3], block.textureCoordinates[1], pos, Block::Position(pos.x, pos.y - 1, pos.z));
-                TryAddFace(block.faceVertices[4], block.textureCoordinates[2], pos, Block::Position(pos.x, pos.y, pos.z + 1));
-                TryAddFace(block.faceVertices[5], block.textureCoordinates[2], pos, Block::Position(pos.x, pos.y, pos.z - 1));
+                 */
+                
+                TryAddFace(block.faceVertices[0], block.textureCoordinates[0], pos,
+                           Block::Position(pos.x + 1, pos.y, pos.z));
+                TryAddFace(block.faceVertices[1], block.textureCoordinates[0], pos,
+                           Block::Position(pos.x - 1, pos.y, pos.z));
+                TryAddFace(block.faceVertices[2], block.textureCoordinates[1], pos,
+                           Block::Position(pos.x, pos.y + 1, pos.z));
+                TryAddFace(block.faceVertices[3], block.textureCoordinates[1], pos,
+                           Block::Position(pos.x, pos.y - 1, pos.z));
+                TryAddFace(block.faceVertices[4], block.textureCoordinates[2], pos,
+                           Block::Position(pos.x, pos.y, pos.z + 1));
+                TryAddFace(block.faceVertices[5], block.textureCoordinates[2], pos,
+                           Block::Position(pos.x, pos.y, pos.z - 1));
             }
         }
     }
@@ -176,13 +190,15 @@ void Chunk::Remesh() {
 }
 
 void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,
-                       const Block::Position &localPosition, const Block::Position &nextPosition) {
+                       const Block::Position &localPosition, const Block::Position &nextPosition)
+{
     if (ShouldMakeBlockFaceAdjacentTo(nextPosition)) {
         AddFace(faceVertices, texCoords, localPosition);
     }
 }
 
-bool Chunk::ShouldMakeBlockFaceAdjacentTo(const Block::Position &position) {
+bool Chunk::ShouldMakeBlockFaceAdjacentTo(const Block::Position &position)
+{
     if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 1) ||
         (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 1) ||
         (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 1)) {
@@ -193,7 +209,8 @@ bool Chunk::ShouldMakeBlockFaceAdjacentTo(const Block::Position &position) {
 }
 
 void Chunk::AddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,
-                    const Block::Position &localPosition) {
+                    const Block::Position &localPosition)
+{
     for (int i = 0, j = 0; i < 4; i++) {
         vertices.push_back(faceVertices[j++] + (float) localPosition.x);
         vertices.push_back(faceVertices[j++] + (float) localPosition.y);
@@ -214,13 +231,15 @@ void Chunk::AddFace(const std::vector<float> &faceVertices, const std::vector<fl
     indicesIndex += 4;
 }
 
-void Chunk::ShrinkVectors() {
+void Chunk::ShrinkVectors()
+{
     vertices.shrink_to_fit();
     indices.shrink_to_fit();
     textureCoords.shrink_to_fit();
 }
 
-void Chunk::FreeMemory() {
+void Chunk::FreeMemory()
+{
     vertices.clear();
     indices.clear();
     textureCoords.clear();

@@ -3,7 +3,8 @@
 
 class Chunk;
 
-class World {
+class World
+{
 public:
     World();
     ~World();

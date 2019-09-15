@@ -7,7 +7,8 @@
 
 #include <stb_image.h>
 
-Texture::Texture(const char *filename) {
+Texture::Texture(const char *filename)
+{
     // Load the image
     data = stbi_load(filename, &width, &height, &channels, 0);
     if (!data) {
@@ -32,7 +33,8 @@ Texture::Texture(const char *filename) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture::~Texture() {
+Texture::~Texture()
+{
     delete[] data;
     glDeleteTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, 0);

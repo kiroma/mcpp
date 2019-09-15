@@ -8,15 +8,18 @@
 #include <gtc/type_ptr.hpp>
 
 Shader::Shader(const char *vertex_path, const char *fragment_path)
-        : vertexPath(vertex_path), fragmentPath(fragment_path) {
+        : vertexPath(vertex_path), fragmentPath(fragment_path)
+{
     program = Load();
 }
 
-Shader::~Shader() {
+Shader::~Shader()
+{
     glDeleteProgram(program);
 }
 
-GLuint Shader::Load() {
+GLuint Shader::Load()
+{
     GLuint program = glCreateProgram();
     GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -73,39 +76,48 @@ GLuint Shader::Load() {
     return program;
 }
 
-void Shader::Enable() const {
+void Shader::Enable() const
+{
     glUseProgram(program);
 }
 
-void Shader::Disable() const {
+void Shader::Disable() const
+{
     glUseProgram(0);
 }
 
-void Shader::Uniform1f(const char *uniform, glm::vec1 val) const {
+void Shader::Uniform1f(const char *uniform, glm::vec1 val) const
+{
     glUniform1f(this->UniformLocation(uniform), val.x);
 }
 
-void Shader::Uniform2f(const char *uniform, glm::vec2 val) const {
+void Shader::Uniform2f(const char *uniform, glm::vec2 val) const
+{
     glUniform2f(this->UniformLocation(uniform), val.x, val.y);
 }
 
-void Shader::Uniform3f(const char *uniform, glm::vec3 val) const {
+void Shader::Uniform3f(const char *uniform, glm::vec3 val) const
+{
     glUniform3f(this->UniformLocation(uniform), val.x, val.y, val.z);
 }
 
-void Shader::Uniform4f(const char *uniform, glm::vec4 val) const {
+void Shader::Uniform4f(const char *uniform, glm::vec4 val) const
+{
     glUniform4f(this->UniformLocation(uniform), val.x, val.y, val.z, val.w);
 }
 
-void Shader::UniformMat4(const char *uniform, glm::mat4 matrix) const {
+void Shader::UniformMat4(const char *uniform, glm::mat4 matrix) const
+{
     glUniformMatrix4fv(this->UniformLocation(uniform), 1, GL_FALSE,
                        glm::value_ptr(matrix));
 }
 
-GLuint Shader::GetProgramID() const {
+GLuint Shader::GetProgramID() const
+{
     return program;
 }
 
-GLint Shader::UniformLocation(const char *uniform) const {
+GLint Shader::UniformLocation(const char *uniform) const
+{
     return glGetUniformLocation(program, (const GLchar *) uniform);
 }

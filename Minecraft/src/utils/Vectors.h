@@ -4,9 +4,11 @@
 #include <vector>
 #include <algorithm>
 
-namespace Vectors {
+namespace Vectors
+{
     template<typename T>
-    void Concat(std::vector<T>& a, std::vector<T>& b) {
+    void Concat(std::vector<T> &a, std::vector<T> &b)
+    {
         a.insert(a.end(), b.begin(), b.end());
     }
 }

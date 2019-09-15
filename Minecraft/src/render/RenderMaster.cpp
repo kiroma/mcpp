@@ -6,8 +6,8 @@
 #include <GL/glew.h>
 #include <iostream>
 
-
-RenderMaster::RenderMaster() {
+RenderMaster::RenderMaster()
+{
     // Load textures and shaders
     textureSolidBlocks = new Texture("../res/textures/atlas.png");
     shaderSolidBlock = new Shader("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
@@ -17,7 +17,8 @@ RenderMaster::RenderMaster() {
     camera = new Camera;
 }
 
-RenderMaster::~RenderMaster() {
+RenderMaster::~RenderMaster()
+{
     delete shaderSolidBlock;
     delete camera;
 }
@@ -25,12 +26,14 @@ RenderMaster::~RenderMaster() {
 // --------------------------------------------------------------
 //  Render the world
 // --------------------------------------------------------------
-void RenderMaster::RenderWorld(const World &world) {
+void RenderMaster::RenderWorld(const World &world)
+{
     for (int i = 0; i < MC_RENDER_PASSES; i++)
         RenderWorldPass(i, world);
 }
 
-void RenderMaster::SubmitProjection(glm::mat4 projection) const {
+void RenderMaster::SubmitProjection(glm::mat4 projection) const
+{
     shaderSolidBlock->Enable();
     shaderSolidBlock->UniformMat4("projection_matrix", projection);
     shaderSolidBlock->Disable();
@@ -42,7 +45,8 @@ void RenderMaster::SubmitProjection(glm::mat4 projection) const {
 //      Pass 1 - Render chunks
 //      (more passes to be added soon, like clouds and water...)
 // --------------------------------------------------------------
-void RenderMaster::RenderWorldPass(int pass, const World &world) {
+void RenderMaster::RenderWorldPass(int pass, const World &world)
+{
     switch (pass) {
         case 0: {
             // Load shader

@@ -11,11 +11,11 @@ include_directories(../Common/lib/glm/glm)
 include_directories(../Common/lib/sfml/include)
 include_directories(../Common/lib/stb)
 
-if(WIN32)
+if (WIN32)
     link_directories(../Common/lib/glew-2.1.0/lib/Release/Win32)
     link_directories(../Common/lib/sfml/lib/)
     link_libraries(mingw32)
-endif(WIN32)
+endif (WIN32)
 
 link_libraries(glew32s opengl32 openal32 sfml-graphics sfml-window sfml-system)
 

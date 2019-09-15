@@ -6,12 +6,14 @@
 #define MOVEMENT_SPEED ((float)0.05)
 #define MOUSE_SENSITIVITY ((float)0.1)
 
-Camera::Camera() {
+Camera::Camera()
+{
     position = glm::vec3(0.0f, 0.0f, 5.0f);
     rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-void Camera::Update() {
+void Camera::Update()
+{
     if (Minecraft::GetInstance().HasFocus()) {
         if (Minecraft::GetInstance().GetInput(sf::Keyboard::Key::W)) {
             position += glm::vec3(0.0f, 0.0f, -MOVEMENT_SPEED);
@@ -43,7 +45,8 @@ void Camera::Update() {
     }
 }
 
-glm::mat4 Camera::GenerateViewMatrix() const {
+glm::mat4 Camera::GenerateViewMatrix() const
+{
     glm::mat4 ret(1.0f);
     ret = glm::rotate(ret, glm::radians(rotation.x), glm::vec3(1, 0, 0));
     ret = glm::rotate(ret, glm::radians(rotation.y), glm::vec3(0, 1, 0));

@@ -5,7 +5,8 @@
 
 #include <glm.hpp>
 
-namespace TextureCoords {
+namespace TextureCoords
+{
     glm::vec2 GetTextureCoordinates(int n);
 }
 

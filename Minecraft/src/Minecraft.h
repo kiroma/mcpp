@@ -5,9 +5,11 @@
 #include <ext.hpp>
 
 class RenderMaster;
+
 class World;
 
-class Minecraft {
+class Minecraft
+{
 public:
     Minecraft();
     ~Minecraft();
@@ -18,12 +20,14 @@ public:
     void Input(int vkey, bool state);
     bool GetInput(int vkey) const;
     glm::vec2 GetMousePosition() const;
-    bool HasFocus() { return gameFocus; }
+    bool HasFocus()
+    { return gameFocus; }
 
     void UpdateProjection() const;
 
-    static Minecraft& GetInstance();
-    bool IsRunning() const volatile { return running; }
+    static Minecraft &GetInstance();
+    bool IsRunning() const volatile
+    { return running; }
 
 private:
     int StartGame();

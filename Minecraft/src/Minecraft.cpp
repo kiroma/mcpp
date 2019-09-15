@@ -12,17 +12,20 @@ Minecraft *instance = nullptr;
 
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
                                 GLenum severity,
-                                GLsizei length, const GLchar *message, const void *userParam) {
+                                GLsizei length, const GLchar *message, const void *userParam)
+{
     std::cout << "OpenGL debug callback: \"" << message << "\"." << std::endl;
 }
 
 Minecraft::Minecraft()
-        : running(false), masterRenderer(nullptr), world(nullptr) {
+        : running(false), masterRenderer(nullptr), world(nullptr)
+{
     instance = this;
     memset(input, 0, sizeof(input));
 }
 
-Minecraft::~Minecraft() {
+Minecraft::~Minecraft()
+{
     delete masterRenderer;
     delete world;
 
@@ -34,7 +37,8 @@ Minecraft::~Minecraft() {
 //      Calls StartGame() and enters a loop rendering
 //      and waiting for events
 // --------------------------------------------------------------
-int Minecraft::Run() {
+int Minecraft::Run()
+{
     // Start game
     running = true;
     gameFocus = true;
@@ -139,24 +143,29 @@ int Minecraft::Run() {
     return 0;
 }
 
-void Minecraft::Shutdown() {
+void Minecraft::Shutdown()
+{
     std::cout << "Shutting down..." << std::endl;
     running = false;
 }
 
-void Minecraft::Input(int vkey, bool state) {
+void Minecraft::Input(int vkey, bool state)
+{
     if (input[vkey] != state) input[vkey] = state;
 }
 
-bool Minecraft::GetInput(int vkey) const {
+bool Minecraft::GetInput(int vkey) const
+{
     return input[vkey];
 }
 
-glm::vec2 Minecraft::GetMousePosition() const {
+glm::vec2 Minecraft::GetMousePosition() const
+{
     return mousePosition;
 }
 
-void Minecraft::UpdateProjection() const {
+void Minecraft::UpdateProjection() const
+{
     masterRenderer->SubmitProjection(
             glm::perspective(glm::radians(80.0f), ((float) window->getSize().x) / ((float) window->getSize().y), 0.01f,
                              1000.0f));
@@ -167,7 +176,8 @@ void Minecraft::UpdateProjection() const {
 //  Initialize game window, pixel format,
 //  OpenGL and modern OpenGL
 // --------------------------------------------------------------
-int Minecraft::StartGame() {
+int Minecraft::StartGame()
+{
     sf::ContextSettings settings;
     settings.antialiasingLevel = 0;
     settings.majorVersion = 3;
@@ -210,6 +220,7 @@ int Minecraft::StartGame() {
 // --------------------------------------------------------------
 //  Get a static reference to the running game
 // --------------------------------------------------------------
-Minecraft &Minecraft::GetInstance() {
+Minecraft &Minecraft::GetInstance()
+{
     return *instance;
 }

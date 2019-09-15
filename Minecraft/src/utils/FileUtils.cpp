@@ -3,8 +3,10 @@
 #include <iostream>
 #include <mem.h>
 
-namespace FileUtils {
-    std::string ReadFile(const char *filename) {
+namespace FileUtils
+{
+    std::string ReadFile(const char *filename)
+    {
         if (!FileExists(filename))
             return std::string("Unable to load file.");
 
@@ -35,7 +37,8 @@ namespace FileUtils {
         return result;
     }
 
-    bool FileExists(const char *filename) {
+    bool FileExists(const char *filename)
+    {
         FILE *file;
         if ((file = fopen(filename, "r"))) {
             fclose(file);

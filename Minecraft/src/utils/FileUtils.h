@@ -3,9 +3,10 @@
 
 #include <string>
 
-namespace FileUtils {
-    std::string ReadFile(const char* filename);
-    bool FileExists(const char* filename);
+namespace FileUtils
+{
+    std::string ReadFile(const char *filename);
+    bool FileExists(const char *filename);
 }
 
 #endif //MINECRAFT_FILEUTILS_H

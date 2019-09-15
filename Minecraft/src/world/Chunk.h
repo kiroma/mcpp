@@ -12,24 +12,29 @@ class World;
 #define MINECRAFT_CHUNK_VBO_COMPONENT_COUNT 3
 #define MINECRAFT_CHUNK_VBO_COUNT 2
 
-class Chunk {
+class Chunk
+{
 public:
     // Constructor & destructor
     Chunk(const World &world);
     ~Chunk();
 
     // Block management
-    void SetChunkState(const Block::Position& position, Block::State state);
-    Block::State GetChunkState(const Block::Position& position) const;
+    void SetChunkState(const Block::Position &position, Block::State state);
+    Block::State GetChunkState(const Block::Position &position) const;
 
     // OpenGL
     void Update();
-    unsigned int GetVBOID(int vbo) const { return vbos[vbo]; };
-    unsigned int GetIBOID() const { return iboID; }
-    unsigned int GetVAOID() const { return vaoID; }
-    unsigned int GetCount() const { return indices.size(); }
+    unsigned int GetVBOID(int vbo) const
+    { return vbos[vbo]; };
+    unsigned int GetIBOID() const
+    { return iboID; }
+    unsigned int GetVAOID() const
+    { return vaoID; }
+    unsigned int GetCount() const
+    { return indices.size(); }
     void AddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,
-                        const Block::Position &localPosition);
+                 const Block::Position &localPosition);
 
     void FreeMemory();
 

@@ -1,10 +1,12 @@
 #include "World.h"
 #include "Chunk.h"
 
-World::World() {
+World::World()
+{
     chunk = new Chunk(*this);
 }
 
-World::~World() {
+World::~World()
+{
     delete chunk;
 }
