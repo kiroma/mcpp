@@ -153,7 +153,7 @@ void Chunk::Remesh()
                 }
                 std::cout << std::endl;
                  */
-                
+
                 TryAddFace(block.faceVertices[0], block.textureCoordinates[0], pos,
                            Block::Position(pos.x + 1, pos.y, pos.z));
                 TryAddFace(block.faceVertices[1], block.textureCoordinates[0], pos,
@@ -184,9 +184,6 @@ void Chunk::Remesh()
     glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
     glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(float), &textureCoords[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    /*std::cout << (float) vertices.size() << std::endl;
-    std::cout << (float) indices.size() << std::endl;*/
 }
 
 void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,

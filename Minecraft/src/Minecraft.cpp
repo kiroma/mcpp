@@ -14,7 +14,7 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
                                 GLenum severity,
                                 GLsizei length, const GLchar *message, const void *userParam)
 {
-    std::cout << "OpenGL debug callback: \"" << message << "\"." << std::endl;
+    std::cout << "OpenGL debug callback: \"" << message << "\"" << std::endl;
 }
 
 Minecraft::Minecraft()
@@ -66,7 +66,7 @@ int Minecraft::Run()
                 case sf::Event::Resized:
                     UpdateProjection();
                     std::cout << "Window resized to " << (float) event.size.width << " * " << (float) event.size.height
-                              << "." << std::endl;
+                              << std::endl;
                     break;
                 case sf::Event::KeyPressed:
                     Input(event.key.code, true);
@@ -135,7 +135,6 @@ int Minecraft::Run()
         sprintf(fpsbuffer, "%.2f", fps);
 
         text.setString(fpsbuffer);
-
         window->draw(text);
         window->display();
     }
@@ -196,6 +195,9 @@ int Minecraft::StartGame()
                   << std::string((const char *) glewGetErrorString(error)) << "\".";
         return error;
     }
+
+    std::cout << "OpenGL " << glGetString(GL_VERSION) << " " << glGetString(GL_RENDERER) << " "
+              << glGetString(GL_VENDOR) << " GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 #ifdef MINECRAFT_DEBUG
     glEnable(GL_DEBUG_OUTPUT);
