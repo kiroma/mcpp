@@ -19,6 +19,7 @@ RenderMaster::RenderMaster()
 
 RenderMaster::~RenderMaster()
 {
+    delete textureSolidBlocks;
     delete shaderSolidBlock;
     delete camera;
 }

@@ -3,6 +3,7 @@
 #include "World.h"
 #include "BlockFace.h"
 #include "../utils/Vectors.h"
+#include "../utils/DirectionVectors.h"
 
 #include <iostream>
 #include <vector>
@@ -136,6 +137,7 @@ void Chunk::Remesh()
     FreeMemory();
     indicesIndex = 0;
 
+    DirectionVectors vectors;
     for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++) {
         for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++) {
             for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++) {
@@ -147,6 +149,8 @@ void Chunk::Remesh()
                     continue;
                 }
 
+                vectors.Update(pos);
+
                 /*
                 for (int i = 0; i < 2 * 6; i++) {
                     std::cout << block.textureCoordinates[1][i] << ", ";
@@ -155,21 +159,21 @@ void Chunk::Remesh()
                  */
 
                 TryAddFace(block.faceVertices[0], block.textureCoordinates[0], pos,
-                           Block::Position(pos.x + 1, pos.y, pos.z));
+                           vectors.Right());
                 TryAddFace(block.faceVertices[1], block.textureCoordinates[0], pos,
-                           Block::Position(pos.x - 1, pos.y, pos.z));
+                           vectors.Left());
                 TryAddFace(block.faceVertices[2], block.textureCoordinates[1], pos,
-                           Block::Position(pos.x, pos.y + 1, pos.z));
+                           vectors.Top());
                 TryAddFace(block.faceVertices[3], block.textureCoordinates[1], pos,
-                           Block::Position(pos.x, pos.y - 1, pos.z));
+                           vectors.Bottom());
                 TryAddFace(block.faceVertices[4], block.textureCoordinates[2], pos,
-                           Block::Position(pos.x, pos.y, pos.z + 1));
+                           vectors.Front());
                 TryAddFace(block.faceVertices[5], block.textureCoordinates[2], pos,
-                           Block::Position(pos.x, pos.y, pos.z - 1));
+                           vectors.Back());
             }
         }
     }
-
+    
     // Load indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);
@@ -209,14 +213,15 @@ void Chunk::AddFace(const std::vector<float> &faceVertices, const std::vector<fl
                     const Block::Position &localPosition)
 {
     for (int i = 0, j = 0; i < 4; i++) {
-        vertices.push_back(faceVertices[j++] + (float) localPosition.x);
-        vertices.push_back(faceVertices[j++] + (float) localPosition.y);
-        vertices.push_back(faceVertices[j++] + (float) localPosition.z);
+        Vectors::Concat(vertices, {
+                faceVertices[j++] + (float) localPosition.x,
+                faceVertices[j++] + (float) localPosition.y,
+                faceVertices[j++] + (float) localPosition.z
+        });
     }
 
-    textureCoords.insert(textureCoords.end(), texCoords.begin(), texCoords.end());
-
-    indices.insert(indices.end(), {
+    Vectors::Concat<float>(textureCoords, texCoords);
+    Vectors::Concat(indices, {
             indicesIndex,
             indicesIndex + 1,
             indicesIndex + 2,

@@ -45,17 +45,7 @@ int Minecraft::Run()
     int i = StartGame();
     if (!i) return i;
 
-    sf::Font font;
-    font.loadFromFile("arial.ttf");
-
-    sf::Text text;
-    text.setCharacterSize(24);
-    text.setFillColor(sf::Color::Black);
-    text.setFont(font);
-
     // Game loop
-    sf::Clock clock;
-    float lastTime = 0;
     while (running) {
         sf::Event event;
         while (window->pollEvent(event)) {
@@ -70,7 +60,6 @@ int Minecraft::Run()
                     break;
                 case sf::Event::KeyPressed:
                     Input(event.key.code, true);
-                    //std::cout << (float)event.key.code << std::endl;
                     break;
                 case sf::Event::KeyReleased:
                     Input(event.key.code, false);
@@ -115,7 +104,7 @@ int Minecraft::Run()
         glEnable(GL_TEXTURE_2D);
 
         glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // :D
         masterRenderer->RenderWorld(*world);
@@ -127,15 +116,6 @@ int Minecraft::Run()
 
         glPopMatrix();
 
-        float currentTime = clock.restart().asSeconds();
-        float fps = 1.0f / (currentTime - lastTime);
-        lastTime = currentTime;
-
-        char fpsbuffer[64];
-        sprintf(fpsbuffer, "%.2f", fps);
-
-        text.setString(fpsbuffer);
-        window->draw(text);
         window->display();
     }
 
