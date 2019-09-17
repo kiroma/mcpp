@@ -1,45 +1,42 @@
 #include "Block.h"
 #include "BlockFace.h"
+#include "../utils/TextureCoords.h"
 
 #include <string.h>
 
+/*
+ * TODO (at some point):
+ *  Free all blocks allocated upon exiting.
+ */
+
 Block::Block *blocks[2048];
 
-const std::vector<float> defaultFaceVertices[6] = {
-        BlockFace::rightFace,
-        BlockFace::leftFace,
-        BlockFace::topFace,
-        BlockFace::bottomFace,
-        BlockFace::frontFace,
-        BlockFace::backFace
-};
+// Whoa, how deep does it get? Block::Block::Block::Block::Block::Block::Block::Block::...
+Block::Block::Block(unsigned short id, const std::vector<float> faceVertices[],
+                    const std::vector<float> textureCoordinates[],
+                    const char *displayName)
+        : id(id), displayName(displayName)
+{
+    for (int i = 0; i < 6; i++) {
+        this->faceVertices[i] = faceVertices[i];
+        if (i < 3)
+            this->textureCoordinates[i] = textureCoordinates[i];
+    }
+}
 
-const std::vector<float> defaultFaceTextureCoords[3] = {
-        {
-                0, 0,
-                0.0625f, 0,
-                0.0625f, 0.0625f,
-                0.0625f, 0.0625f,
-                0, 0.0625f,
-                0, 0
-        },
-        {
-                0, 0,
-                0.0625f, 0,
-                0.0625f, 0.0625f,
-                0.0625f, 0.0625f,
-                0, 0.0625f,
-                0, 0
-        },
-        {
-                0, 0,
-                0.0625f, 0,
-                0.0625f, 0.0625f,
-                0.0625f, 0.0625f,
-                0, 0.0625f,
-                0, 0
-        }
-};
+Block::Block::~Block()
+{
+}
+
+const std::vector<float> Block::Block::GetFaceVertices(int face) const
+{
+    return faceVertices[face];
+}
+
+const std::vector<float> Block::Block::GetTextureCoordinates(int direction) const
+{
+    return textureCoordinates[direction];
+}
 
 void Block::Database::Initialize()
 {
@@ -65,21 +62,28 @@ void Block::Database::Initialize()
     RegisterBlock(15, nullptr, nullptr, "Redstone Ore");
 }
 
-void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertices,
-                                    const std::vector<float> *textureCoordinates, const char *displayName)
+void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, std::vector<float> *textureCoordinates,
+                                    const char *displayName)
 {
-    Block *block = (Block *) malloc(sizeof(Block));
-    block->id = id;
-    block->displayName = displayName;
-    if (id == 0) goto out;
+    std::vector<float> defaultFaceVertices[6] = {
+            BlockFace::rightFace,
+            BlockFace::leftFace,
+            BlockFace::topFace,
+            BlockFace::bottomFace,
+            BlockFace::frontFace,
+            BlockFace::backFace
+    };
 
-    if (faceVertices != nullptr) block->faceVertices = faceVertices; else block->faceVertices = defaultFaceVertices;
-    if (textureCoordinates != nullptr)
-        block->textureCoordinates = textureCoordinates;
-    else block->textureCoordinates = defaultFaceTextureCoords;
+    std::vector<float> defaultTextureCoordinates[3] = {
+            TextureCoords::GenerateTextureCoordinates(id - 1), // skip air
+            TextureCoords::GenerateTextureCoordinates(id - 1),
+            TextureCoords::GenerateTextureCoordinates(id - 1)
+    };
 
-    out:
-    blocks[id] = block;
+    const std::vector<float> *fv = faceVertices == nullptr ? defaultFaceVertices : faceVertices;
+    const std::vector<float> *tc = textureCoordinates == nullptr ? defaultTextureCoordinates : textureCoordinates;
+
+    blocks[id] = new Block(id, fv, tc, displayName);
 }
 
 Block::Block &Block::Database::GetBlock(int id)

@@ -83,7 +83,7 @@ int Minecraft::Run()
 
         if (gameFocus) {
             window->setMouseCursorVisible(false);
-            sf::Mouse::setPosition(sf::Vector2i(window->getSize().x / 2, window->getSize().y / 2));
+            sf::Mouse::setPosition(sf::Vector2i(window->getPosition().x + window->getSize().x / 2, window->getPosition().y + window->getSize().y / 2));
         } else {
             window->setMouseCursorVisible(true);
         }

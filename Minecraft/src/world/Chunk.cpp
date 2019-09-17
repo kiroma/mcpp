@@ -158,17 +158,17 @@ void Chunk::Remesh()
                 std::cout << std::endl;
                  */
 
-                TryAddFace(block.faceVertices[0], block.textureCoordinates[0], pos,
+                TryAddFace(block.GetFaceVertices(0), block.GetTextureCoordinates(0), pos,
                            vectors.Right());
-                TryAddFace(block.faceVertices[1], block.textureCoordinates[0], pos,
+                TryAddFace(block.GetFaceVertices(1), block.GetTextureCoordinates(0), pos,
                            vectors.Left());
-                TryAddFace(block.faceVertices[2], block.textureCoordinates[1], pos,
+                TryAddFace(block.GetFaceVertices(2), block.GetTextureCoordinates(1), pos,
                            vectors.Top());
-                TryAddFace(block.faceVertices[3], block.textureCoordinates[1], pos,
+                TryAddFace(block.GetFaceVertices(3), block.GetTextureCoordinates(1), pos,
                            vectors.Bottom());
-                TryAddFace(block.faceVertices[4], block.textureCoordinates[2], pos,
+                TryAddFace(block.GetFaceVertices(4), block.GetTextureCoordinates(2), pos,
                            vectors.Front());
-                TryAddFace(block.faceVertices[5], block.textureCoordinates[2], pos,
+                TryAddFace(block.GetFaceVertices(5), block.GetTextureCoordinates(2), pos,
                            vectors.Back());
             }
         }

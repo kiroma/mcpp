@@ -23,27 +23,35 @@ namespace Block
         {
         }
 
-        State(short id)
+        State(unsigned short id)
         {
             this->id = id;
         }
 
-        short id;
+        unsigned short id;
     };
 
-    struct Block
+    class Block
     {
-        short id;
-        const std::vector<float> *faceVertices;
-        const std::vector<float> *textureCoordinates;
+    public:
+        Block(unsigned short id, const std::vector<float> faceVertices[], const std::vector<float> textureCoordinates[],
+              const char *displayName);
+        ~Block();
+
+        const std::vector<float> GetFaceVertices(int face) const;
+        const std::vector<float> GetTextureCoordinates(int direction) const;
+    private:
+        unsigned short id;
+        std::vector<float> faceVertices[6];
+        std::vector<float> textureCoordinates[3];
         const char *displayName;
     };
 
     namespace Database
     {
         void Initialize();
-        void RegisterBlock(int id, const std::vector<float> *faceVertices,
-                           const std::vector<float> *textureCoordinates, const char *displayName);
+        void RegisterBlock(int id, std::vector<float> *faceVertices,
+                           std::vector<float> *textureCoordinates, const char *displayName);
         Block &GetBlock(int id);
     }
 }
