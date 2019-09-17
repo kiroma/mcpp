@@ -75,9 +75,9 @@ void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, st
     };
 
     std::vector<float> defaultTextureCoordinates[3] = {
-            TextureCoords::GenerateTextureCoordinates(id - 1), // skip air
-            TextureCoords::GenerateTextureCoordinates(id - 1),
-            TextureCoords::GenerateTextureCoordinates(id - 1)
+            TextureCoords::GenerateTextureCoordinates(id), // skip air
+            TextureCoords::GenerateTextureCoordinates(id),
+            TextureCoords::GenerateTextureCoordinates(id)
     };
 
     const std::vector<float> *fv = faceVertices == nullptr ? defaultFaceVertices : faceVertices;
