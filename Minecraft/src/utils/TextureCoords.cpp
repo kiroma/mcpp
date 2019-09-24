@@ -4,10 +4,10 @@
 
 const glm::vec2 TextureCoords::GetTextureCoordinates(int n)
 {
-    int tx = n % MINECRAFT_ATLAS_UNITS;
-    int ty = n / MINECRAFT_ATLAS_UNITS;
-    float u = (float)tx / (float)MINECRAFT_ATLAS_UNIT_SIZE;
-    float v = (float)ty / (float)MINECRAFT_ATLAS_UNIT_SIZE;
+    unsigned int tx = n % MINECRAFT_ATLAS_UNITS;
+    unsigned int ty = n / MINECRAFT_ATLAS_UNITS;
+    float u = (float) (tx) / (float) MINECRAFT_ATLAS_UNIT_SIZE;
+    float v = (float) (ty) / (float) MINECRAFT_ATLAS_UNIT_SIZE;
 
     //std::cout << u << "," << v << std::endl;
     return glm::vec2(u, v);
@@ -27,13 +27,14 @@ const std::vector<float> TextureCoords::GenerateTextureCoordinates(int n)
     };
 
     /*
+    std::cout << "For " << n << ":"<< std::endl;
     for (int i = 0; i < 6 * 2; i++) {
         std::cout << ret[i] << ", ";
         if (i % 2 != 0)
             std::cout << std::endl;
     }
      */
-    std::cout << "=========" << std::endl;
 
+    std::cout << "=========" << std::endl;
     return ret;
 }

@@ -173,7 +173,7 @@ void Chunk::Remesh()
             }
         }
     }
-    
+
     // Load indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);

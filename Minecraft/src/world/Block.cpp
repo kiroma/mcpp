@@ -25,18 +25,13 @@ Block::Block::Block(unsigned short id, const std::vector<float> faceVertices[],
 }
 
 Block::Block::~Block()
-{
-}
+{}
 
 const std::vector<float> Block::Block::GetFaceVertices(int face) const
-{
-    return faceVertices[face];
-}
+{ return faceVertices[face]; }
 
 const std::vector<float> Block::Block::GetTextureCoordinates(int direction) const
-{
-    return textureCoordinates[direction];
-}
+{ return textureCoordinates[direction]; }
 
 void Block::Database::Initialize()
 {
@@ -75,9 +70,9 @@ void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, st
     };
 
     std::vector<float> defaultTextureCoordinates[3] = {
-            TextureCoords::GenerateTextureCoordinates(id), // skip air
-            TextureCoords::GenerateTextureCoordinates(id),
-            TextureCoords::GenerateTextureCoordinates(id)
+            TextureCoords::GenerateTextureCoordinates(id - 1), // skip air
+            TextureCoords::GenerateTextureCoordinates(id - 1),
+            TextureCoords::GenerateTextureCoordinates(id - 1)
     };
 
     const std::vector<float> *fv = faceVertices == nullptr ? defaultFaceVertices : faceVertices;
@@ -87,6 +82,4 @@ void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, st
 }
 
 Block::Block &Block::Database::GetBlock(int id)
-{
-    return *blocks[id];
-}
+{ return *blocks[id]; }

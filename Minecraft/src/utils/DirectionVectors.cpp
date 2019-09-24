@@ -2,11 +2,11 @@
 
 DirectionVectors::DirectionVectors()
         : DirectionVectors(Block::Position(0, 0, 0))
-{ }
+{}
 
 DirectionVectors::DirectionVectors(Block::Position pos)
         : position(pos)
-{ }
+{}
 
 void DirectionVectors::Update(Block::Position pos)
 { this->position = pos; }
