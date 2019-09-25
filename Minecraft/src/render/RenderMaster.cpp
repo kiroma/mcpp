@@ -9,7 +9,7 @@
 RenderMaster::RenderMaster()
 {
     // Load textures and shaders
-    textureSolidBlocks = new Texture("../res/textures/atlas.png");
+    textureSolidBlocks = new TextureAtlas("../res/textures/atlas.png", 16);
     shaderSolidBlock = new Shader("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
     shaderSolidBlock->Uniform1f("main_texture", glm::vec1(0));
 
@@ -64,7 +64,7 @@ void RenderMaster::RenderWorldPass(int pass, const World &world)
 
             // Bind textures
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textureSolidBlocks->GetID());
+            glBindTexture(GL_TEXTURE_2D, textureSolidBlocks->GetInternalTexture().GetID());
 
             // The call of truth
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world.chunk->GetIBOID());

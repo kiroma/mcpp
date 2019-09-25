@@ -192,9 +192,9 @@ int Minecraft::StartGame()
     std::cout << "==============================================" << std::endl;
 
     // Initialize stuff
+    masterRenderer = new RenderMaster;
     Block::Database::Initialize();
     world = new World;
-    masterRenderer = new RenderMaster;
 
     // Make sure we are in a consistent state
     UpdateProjection();

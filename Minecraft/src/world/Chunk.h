@@ -9,7 +9,6 @@ class World;
 #include <vec3.hpp>
 
 #define MINECRAFT_CHUNK_SIZE 16
-#define MINECRAFT_CHUNK_VBO_COMPONENT_COUNT 3
 #define MINECRAFT_CHUNK_VBO_COUNT 2
 
 class Chunk
@@ -56,6 +55,7 @@ private:
     // OpenGL
     unsigned int vaoID, iboID, count;
     unsigned int vbos[16];
+    unsigned int vbosComponentCount[16] { 3, 2 }; // Add here the component count for future VBOs
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
     std::vector<float> textureCoords;

@@ -36,7 +36,7 @@ Chunk::Chunk(const World &world)
     for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
         glBindBuffer(GL_ARRAY_BUFFER, vbos[i]);
         glEnableVertexAttribArray(i);
-        glVertexAttribPointer(i, MINECRAFT_CHUNK_VBO_COMPONENT_COUNT, GL_FLOAT, false, 0, nullptr);
+        glVertexAttribPointer(i, vbosComponentCount[i], GL_FLOAT, false, 0, nullptr);
         glDisableVertexAttribArray(i);
     }
 

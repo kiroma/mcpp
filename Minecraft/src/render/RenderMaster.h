@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "TextureAtlas.h"
 
 class World;
 
@@ -17,14 +18,17 @@ public:
 
     void RenderWorld(const World &world);
     void SubmitProjection(glm::mat4 projection) const;
+
+    const Shader& GetCurrentShader() const
+    { return *shaderSolidBlock; }
+    const TextureAtlas& GetTextureAtlas() const
+    { return *textureSolidBlocks; }
+    const Camera& GetViewCamera() const
+    { return *camera; }
+
 private:
-    // Shaders
     Shader *shaderSolidBlock;
-
-    // Textures
-    Texture *textureSolidBlocks;
-
-    // Camera
+    TextureAtlas *textureSolidBlocks;
     Camera *camera;
 
     void RenderWorldPass(int pass, const World &world);

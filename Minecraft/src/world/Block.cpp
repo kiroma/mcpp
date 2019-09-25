@@ -1,8 +1,11 @@
 #include "Block.h"
 #include "BlockFace.h"
-#include "../utils/TextureCoords.h"
+#include "../render/TextureAtlas.h"
+#include "../render/RenderMaster.h"
+#include "../Minecraft.h"
 
-#include <string.h>
+#include <iostream>
+#include <string>
 
 /*
  * TODO (at some point):
@@ -25,7 +28,7 @@ Block::Block::Block(unsigned short id, const std::vector<float> faceVertices[],
 }
 
 Block::Block::~Block()
-{}
+{ }
 
 const std::vector<float> Block::Block::GetFaceVertices(int face) const
 { return faceVertices[face]; }
@@ -69,10 +72,11 @@ void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, st
             BlockFace::backFace
     };
 
-    std::vector<float> defaultTextureCoordinates[3] = {
-            TextureCoords::GenerateTextureCoordinates(id - 1), // skip air
-            TextureCoords::GenerateTextureCoordinates(id - 1),
-            TextureCoords::GenerateTextureCoordinates(id - 1)
+    const TextureAtlas &atlas = Minecraft::GetInstance().GetMasterRenderer().GetTextureAtlas();
+    const std::vector<float> defaultTextureCoordinates[3] = {
+            atlas.GetTexture(atlas.CalculatePositionFromIndex(id)), // skip air
+            atlas.GetTexture(atlas.CalculatePositionFromIndex(id)),
+            atlas.GetTexture(atlas.CalculatePositionFromIndex(id))
     };
 
     const std::vector<float> *fv = faceVertices == nullptr ? defaultFaceVertices : faceVertices;

@@ -25,9 +25,14 @@ public:
 
     void UpdateProjection() const;
 
+    // Getters
     static Minecraft &GetInstance();
     bool IsRunning() const volatile
     { return running; }
+    const RenderMaster& GetMasterRenderer() const
+    { return *masterRenderer; }
+    const World& GetCurrentWorld() const
+    { return *world; }
 
 private:
     int StartGame();
