@@ -19,11 +19,11 @@ public:
     void RenderWorld(const World &world);
     void SubmitProjection(glm::mat4 projection) const;
 
-    const Shader& GetCurrentShader() const
+    const Shader &GetCurrentShader() const
     { return *shaderSolidBlock; }
-    const TextureAtlas& GetTextureAtlas() const
+    const TextureAtlas &GetTextureAtlas() const
     { return *textureSolidBlocks; }
-    const Camera& GetViewCamera() const
+    const Camera &GetViewCamera() const
     { return *camera; }
 
 private:

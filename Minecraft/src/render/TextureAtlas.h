@@ -13,7 +13,7 @@ public:
     TextureAtlas(const std::string &filename, int block_texture_size);
     const std::vector<float> GetTexture(const glm::i32vec2 coords) const;
     const glm::i32vec2 CalculatePositionFromIndex(int n) const;
-    const Texture& GetInternalTexture() const
+    const Texture &GetInternalTexture() const
     { return texture; };
 private:
     Texture texture;

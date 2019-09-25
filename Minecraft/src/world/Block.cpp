@@ -12,6 +12,7 @@
  *  Free all blocks allocated upon exiting.
  */
 
+// The actual allocated blocks
 Block::Block *blocks[2048];
 
 // Whoa, how deep does it get? Block::Block::Block::Block::Block::Block::Block::Block::...
@@ -22,13 +23,13 @@ Block::Block::Block(unsigned short id, const std::vector<float> faceVertices[],
 {
     for (int i = 0; i < 6; i++) {
         this->faceVertices[i] = faceVertices[i];
-        if (i < 3)
+        if (i < 3 && textureCoordinates != nullptr)
             this->textureCoordinates[i] = textureCoordinates[i];
     }
 }
 
 Block::Block::~Block()
-{ }
+{}
 
 const std::vector<float> Block::Block::GetFaceVertices(int face) const
 { return faceVertices[face]; }
@@ -42,15 +43,15 @@ void Block::Database::Initialize()
     memset(blocks, 0, sizeof(blocks));
 
     // Register blocks
-    RegisterBlock(0, nullptr, nullptr, "Air");
-    RegisterBlock(1, nullptr, nullptr, "Stone");
-    RegisterBlock(2, nullptr, nullptr, "Dirt");
-    RegisterBlock(3, nullptr, nullptr, "Gravel");
-    RegisterBlock(4, nullptr, nullptr, "Oak Planks");
-    RegisterBlock(5, nullptr, nullptr, "Stone Bricks");
-    RegisterBlock(6, nullptr, nullptr, "TNT");
-    RegisterBlock(7, nullptr, nullptr, "Yellow Hardened Clay");
-    RegisterBlock(8, nullptr, nullptr, "Diamond Block");
+    RegisterBlock(0, nullptr, -1, "Air");
+    RegisterBlock(1, nullptr, 0, "Stone");
+    RegisterBlock(2, nullptr, 1, "Dirt");
+    RegisterBlock(3, nullptr, 2, "Gravel");
+    RegisterBlock(4, nullptr, 3, "Oak Planks");
+    RegisterBlock(5, nullptr, 4, "Stone Bricks");
+    RegisterBlock(6, nullptr, 5, "TNT");
+    RegisterBlock(7, nullptr, 6, "Yellow Hardened Clay");
+    RegisterBlock(8, nullptr, 7, "Diamond Block");
     RegisterBlock(9, nullptr, nullptr, "Coal Ore");
     RegisterBlock(10, nullptr, nullptr, "Diamond Ore");
     RegisterBlock(11, nullptr, nullptr, "Emerald Ore");
@@ -60,7 +61,8 @@ void Block::Database::Initialize()
     RegisterBlock(15, nullptr, nullptr, "Redstone Ore");
 }
 
-void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, std::vector<float> *textureCoordinates,
+void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertices,
+                                    const std::vector<float> *textureCoordinates,
                                     const char *displayName)
 {
     std::vector<float> defaultFaceVertices[6] = {
@@ -72,17 +74,23 @@ void Block::Database::RegisterBlock(int id, std::vector<float> *faceVertices, st
             BlockFace::backFace
     };
 
-    const TextureAtlas &atlas = Minecraft::GetInstance().GetMasterRenderer().GetTextureAtlas();
-    const std::vector<float> defaultTextureCoordinates[3] = {
-            atlas.GetTexture(atlas.CalculatePositionFromIndex(id)), // skip air
-            atlas.GetTexture(atlas.CalculatePositionFromIndex(id)),
-            atlas.GetTexture(atlas.CalculatePositionFromIndex(id))
-    };
-
     const std::vector<float> *fv = faceVertices == nullptr ? defaultFaceVertices : faceVertices;
-    const std::vector<float> *tc = textureCoordinates == nullptr ? defaultTextureCoordinates : textureCoordinates;
+    const std::vector<float> *tc = textureCoordinates;
 
     blocks[id] = new Block(id, fv, tc, displayName);
+}
+
+void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertices,
+                                    int atlas_id, const char *displayName)
+{
+    const TextureAtlas &atlas = Minecraft::GetInstance().GetMasterRenderer().GetTextureAtlas();
+    const std::vector<float> texturecoords[3] = {
+            atlas.GetTexture(atlas.CalculatePositionFromIndex(id - 1)), // skip air
+            atlas.GetTexture(atlas.CalculatePositionFromIndex(id - 1)),
+            atlas.GetTexture(atlas.CalculatePositionFromIndex(id - 1))
+    };
+
+    RegisterBlock(id, faceVertices, atlas_id != -1 ? texturecoords : nullptr, displayName);
 }
 
 Block::Block &Block::Database::GetBlock(int id)

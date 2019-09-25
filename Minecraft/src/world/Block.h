@@ -50,8 +50,10 @@ namespace Block
     namespace Database
     {
         void Initialize();
-        void RegisterBlock(int id, std::vector<float> *faceVertices,
-                           std::vector<float> *textureCoordinates, const char *displayName);
+        void RegisterBlock(int id, const std::vector<float> *faceVertices,
+                           const std::vector<float> *textureCoordinates, const char *displayName);
+        void RegisterBlock(int id, const std::vector<float> *faceVertices,
+                           int atlas_id, const char *displayName);
         Block &GetBlock(int id);
     }
 }
