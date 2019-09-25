@@ -2,6 +2,7 @@
 
 #include "World.h"
 #include "BlockFace.h"
+#include "FullChunk.h"
 #include "../utils/Vectors.h"
 #include "../utils/DirectionVectors.h"
 
@@ -14,8 +15,8 @@
 // --------------------------------------------------------------
 //  Constructor: Allocate resources
 // --------------------------------------------------------------
-Chunk::Chunk(const World &world)
-        : count(0)
+Chunk::Chunk(World *world, FullChunk *parent, int y_position)
+        : count(0), parent(*parent), y_position(y_position)
 {
     // Generate VBOs
     memset(vbos, -1, 16 * sizeof(unsigned int));
@@ -51,7 +52,7 @@ Chunk::Chunk(const World &world)
     for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++)
         for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++)
             for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++)
-                SetChunkState(Block::Position(x, y, z), Block::State(rand() % 16 == 5 ? 1 : 0));
+                SetChunkState(Block::Position(x, y, z), Block::State(1));
 
     needsRebuild = true;
     Update();

@@ -1,9 +1,8 @@
 #include "World.h"
-#include "Chunk.h"
 
 World::World()
 {
-    chunk = new Chunk(*this);
+    chunk = new FullChunk(*this);
 }
 
 World::~World()

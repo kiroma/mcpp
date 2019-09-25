@@ -4,6 +4,7 @@
 class World;
 
 #include "Block.h"
+class FullChunk;
 
 #include <vector>
 #include <vec3.hpp>
@@ -15,7 +16,7 @@ class Chunk
 {
 public:
     // Constructor & destructor
-    Chunk(const World &world);
+    Chunk(World *world, FullChunk *parent, int y_position);
     ~Chunk();
 
     // Block management
@@ -51,6 +52,8 @@ private:
 
     // Chunk updating
     bool needsRebuild;
+    int y_position;
+    const FullChunk &parent;
 
     // OpenGL
     unsigned int vaoID, iboID, count;

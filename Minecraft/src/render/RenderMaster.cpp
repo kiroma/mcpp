@@ -55,32 +55,38 @@ void RenderMaster::RenderWorldPass(int pass, const World &world)
             shaderSolidBlock->Enable();
             shaderSolidBlock->UniformMat4("view_matrix", camera->GenerateViewMatrix());
 
-            // Load models
-            glBindVertexArray(world.chunk->GetVAOID());
-            for (int i = 0; i < 16; i++) {
-                if (world.chunk->GetVBOID(i) != -1)
-                    glEnableVertexAttribArray(i);
+            // For every chunk section
+            for (int i = 0; i < MINECRAFT_CHUNK_SECTIONS; i++) {
+                // Bind and enable stuff
+                glBindVertexArray(world.chunk->GetSections()[i]->GetVAOID());
+                for (int i = 0; i < 16; i++) {
+                    if (world.chunk->GetSections()[i]->GetVBOID(i) != -1)
+                        glEnableVertexAttribArray(i);
+                }
+
+                // Position chunk
+                shaderSolidBlock->UniformMat4("model_matrix", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, i * 16.0f, 0.0f)));
+
+                // Bind textures
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, textureSolidBlocks->GetInternalTexture().GetID());
+
+                // The call of truth
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world.chunk->GetSections()[i]->GetIBOID());
+                glDrawElements(GL_TRIANGLES, world.chunk->GetSections()[i]->GetCount(), GL_UNSIGNED_INT, nullptr);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+                // Disable models
+                for (int i = 0; i < 16; i++) {
+                    if (world.chunk->GetSections()[i]->GetVBOID(i) != -1)
+                        glDisableVertexAttribArray(i);
+                }
+
+                // Unbind stuff
+                glBindVertexArray(0);
             }
 
-            // Bind textures
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textureSolidBlocks->GetInternalTexture().GetID());
-
-            // The call of truth
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world.chunk->GetIBOID());
-            glDrawElements(GL_TRIANGLES, world.chunk->GetCount(), GL_UNSIGNED_INT, nullptr);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-            // Disable models
-            for (int i = 0; i < 16; i++) {
-                if (world.chunk->GetVBOID(i) != -1)
-                    glDisableVertexAttribArray(i);
-            }
-
-            // Unbind stuff
-            glBindVertexArray(0);
             shaderSolidBlock->Disable();
-
             break;
         }
         default:

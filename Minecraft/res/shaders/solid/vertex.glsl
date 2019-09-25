@@ -9,11 +9,12 @@ out vec2 pass_texture_coords;
 
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
+uniform mat4 model_matrix;
 
 void main(void)
 {
     pass_vertex_color = mod(position.zxyw, 2);
     pass_position = position;
     pass_texture_coords = textureCoords;
-    gl_Position = projection_matrix * view_matrix * position;
+    gl_Position = projection_matrix * view_matrix * model_matrix * position;
 }
