@@ -49,10 +49,7 @@ Chunk::Chunk(World *world, FullChunk *parent, int y_position)
     // Update chunk itself
     srand((unsigned int) this);
     memset(blocks, 0, MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * sizeof(Block::State));
-    for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++)
-        for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++)
-            for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++)
-                SetChunkState(Block::Position(x, y, z), Block::State(1));
+    SetChunkState(Block::Position(0, 0, 0), Block::State(1));
 
     needsRebuild = true;
     Update();

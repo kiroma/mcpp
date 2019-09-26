@@ -3,7 +3,7 @@
 
 #include <gtc/matrix_transform.hpp>
 
-#define MOVEMENT_SPEED ((float)0.05)
+#define MOVEMENT_SPEED ((float)0.1)
 #define MOUSE_SENSITIVITY ((float)0.1)
 
 Camera::Camera()

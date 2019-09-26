@@ -5,7 +5,7 @@ TextureAtlas::TextureAtlas(const std::string &filename, int block_texture_size)
         : texture(filename.c_str()), blockTextureSize(block_texture_size)
 {}
 
-const std::vector<float> TextureAtlas::GetTexture(const glm::i32vec2 coords) const
+const std::vector<float> TextureAtlas::GetTexture(const glm::ivec2 coords) const
 {
     // Thanks to https://github.com/Hopson97/HopsonCraft/blob/master/Source/Texture/TextureAtlas.cpp
     static const int textures_per_axis = texture.GetSize() / blockTextureSize;
@@ -23,8 +23,8 @@ const std::vector<float> TextureAtlas::GetTexture(const glm::i32vec2 coords) con
     };
 }
 
-const glm::i32vec2 TextureAtlas::CalculatePositionFromIndex(int n) const
+const glm::ivec2 TextureAtlas::CalculatePositionFromIndex(int n) const
 {
     static const int textures_per_axis = texture.GetSize() / blockTextureSize;
-    return glm::i32vec2(n % textures_per_axis, (int) glm::floor((double) n / (double) textures_per_axis));
+    return glm::ivec2(n % textures_per_axis, (int) glm::floor((double) n / (double) textures_per_axis));
 }
