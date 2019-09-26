@@ -2,7 +2,7 @@
 #define MINECRAFT_RENDERMASTER_H
 
 #include "Shader.h"
-#include "Camera.h"
+#include "../entity/Camera.h"
 #include "Texture.h"
 #include "TextureAtlas.h"
 

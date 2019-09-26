@@ -5,7 +5,7 @@
 #include "../Minecraft.h"
 
 #include <iostream>
-#include <string>
+#include <cstring>
 
 /*
  * TODO (at some point):

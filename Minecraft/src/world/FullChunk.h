@@ -13,10 +13,10 @@ public:
     FullChunk(World &world, glm::ivec2 position);
     ~FullChunk();
 
-    Block::State GetChunkState(const Block::Position& position) const;
-    void SetChunkState(const Block::Position& position, Block::State state);
+    Block::State GetChunkState(const Block::Position &position) const;
+    void SetChunkState(const Block::Position &position, Block::State state);
     void Update() const;
-    const Chunk& GetSection(int n) const;
+    const Chunk &GetSection(int n) const;
     void FreeMemory() const;
 
     const std::vector<Chunk *> &GetSections() const

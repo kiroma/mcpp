@@ -1,11 +1,11 @@
 #ifndef MINECRAFT_TEXTUREATLAS_H
 #define MINECRAFT_TEXTUREATLAS_H
 
+#include "Texture.h"
+
 #include <string>
 #include <vector>
-#include <ext.hpp>
-#include <vec2.hpp>
-#include "Texture.h"
+#include <glm.hpp>
 
 class TextureAtlas
 {

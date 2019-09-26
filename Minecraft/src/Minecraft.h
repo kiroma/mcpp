@@ -1,8 +1,9 @@
 #ifndef MINECRAFT_MINECRAFT_H
 #define MINECRAFT_MINECRAFT_H
 
+#include <vec2.hpp>
+#include <gtc/matrix_transform.hpp>
 #include <SFML/Graphics.hpp>
-#include <ext.hpp>
 
 class RenderMaster;
 
@@ -37,7 +38,6 @@ public:
 private:
     int StartGame();
 
-private:
     bool running;
     bool input[4096];
     glm::vec2 mousePosition;

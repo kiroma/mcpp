@@ -1,9 +1,11 @@
 #ifndef MINECRAFT_CAMERA_H
 #define MINECRAFT_CAMERA_H
 
+#include "Entity.h"
+
 #include <glm.hpp>
 
-class Camera
+class Camera : protected Entity
 {
 public:
     Camera();
@@ -11,8 +13,6 @@ public:
     void Update();
     glm::mat4 GenerateViewMatrix() const;
 private:
-    glm::vec3 position;
-    glm::vec3 rotation;
     glm::vec2 lastMousePos;
 };
 

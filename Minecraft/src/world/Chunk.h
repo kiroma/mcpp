@@ -4,6 +4,7 @@
 class World;
 
 #include "Block.h"
+
 class FullChunk;
 
 #include <vector>

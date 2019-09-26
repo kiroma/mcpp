@@ -1,5 +1,6 @@
-#include <iostream>
 #include "TextureAtlas.h"
+
+#include <iostream>
 
 TextureAtlas::TextureAtlas(const std::string &filename, int block_texture_size)
         : texture(filename.c_str()), blockTextureSize(block_texture_size)
@@ -12,14 +13,14 @@ const std::vector<float> TextureAtlas::GetTexture(const glm::ivec2 coords) const
     static const float unit_size = 1.0f / (float) textures_per_axis;
     static const float pixel_size = 1.0f / (float) texture.GetSize();
 
-    float base_x = (coords.x * unit_size) + 0.5f * pixel_size;
-    float base_y = (coords.y * unit_size) + 0.5f * pixel_size;
+    float base_x = coords.x * unit_size;
+    float base_y = coords.y * unit_size;
 
     return {
-            (base_x + unit_size) - 0.5f * pixel_size, (base_y + unit_size) - 0.5f * pixel_size,
-            base_x, (base_y + unit_size) - 0.5f * pixel_size,
+            base_x + unit_size, base_y + unit_size,
+            base_x, base_y + unit_size,
             base_x, base_y,
-            (base_x + unit_size) - 0.5f * pixel_size, base_y
+            base_x + unit_size, base_y
     };
 }
 
