@@ -17,7 +17,8 @@ public:
     ~RenderMaster();
 
     void RenderWorld(const World &world);
-    void SubmitProjection(glm::mat4 projection) const;
+    void SubmitProjection(const glm::mat4 projection) const;
+    void LoadCamera(Camera *camera);
 
     const Shader &GetCurrentShader() const
     { return *shaderSolidBlock; }
@@ -31,7 +32,8 @@ private:
     TextureAtlas *textureSolidBlocks;
     Camera *camera;
 
-    void RenderWorldPass(int pass, const World &world);
+    // World rendering routines
+    void RenderChunks(const World &world);
 };
 
 #endif //MINECRAFT_RENDERMASTER_H

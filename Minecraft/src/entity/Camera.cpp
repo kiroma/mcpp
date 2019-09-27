@@ -3,11 +3,12 @@
 
 #include <gtc/matrix_transform.hpp>
 
-#define MOVEMENT_SPEED ((float)0.1)
+#define MOVEMENT_SPEED ((float)5.0)
+#define RUN_MULTIPLIER ((float)5.0)
 #define MOUSE_SENSITIVITY ((float)0.1)
 
-Camera::Camera()
-        : Entity()
+Camera::Camera(glm::vec3 position)
+        : Entity(position)
 {}
 
 void Camera::Update()
@@ -16,12 +17,13 @@ void Camera::Update()
 
     if (minecraft.HasFocus()) {
         // Translations
-        Translate(minecraft.GetInput(sf::Keyboard::Key::W), glm::vec3(0, 0, MOVEMENT_SPEED));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::S), glm::vec3(0, 0, -MOVEMENT_SPEED));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::A), glm::vec3(MOVEMENT_SPEED, 0, 0));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::D), glm::vec3(-MOVEMENT_SPEED, 0, 0));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::Space), glm::vec3(0, MOVEMENT_SPEED, 0));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::LShift), glm::vec3(0, -MOVEMENT_SPEED, 0));
+        const float speed = MOVEMENT_SPEED * (minecraft.GetInput(sf::Keyboard::Key::LControl) ? RUN_MULTIPLIER : 1) * minecraft.GetDeltaTime();
+        Translate(minecraft.GetInput(sf::Keyboard::Key::W), glm::vec3(0, 0, speed));
+        Translate(minecraft.GetInput(sf::Keyboard::Key::S), glm::vec3(0, 0, -speed));
+        Translate(minecraft.GetInput(sf::Keyboard::Key::A), glm::vec3(speed, 0, 0));
+        Translate(minecraft.GetInput(sf::Keyboard::Key::D), glm::vec3(-speed, 0, 0));
+        Translate(minecraft.GetInput(sf::Keyboard::Key::Space), glm::vec3(0, speed, 0));
+        Translate(minecraft.GetInput(sf::Keyboard::Key::LShift), glm::vec3(0, -speed, 0));
 
         // Mouse look
         glm::vec2 rot = minecraft.GetMousePosition() - lastMousePos;

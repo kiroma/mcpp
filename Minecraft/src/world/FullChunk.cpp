@@ -21,13 +21,13 @@ FullChunk::~FullChunk()
 Block::State FullChunk::GetChunkState(const Block::Position &position) const
 {
     return sections[position.y / MINECRAFT_CHUNK_SECTIONS]->GetChunkState(
-            Block::Position(position.x, position.y - (position.y / MINECRAFT_CHUNK_SECTIONS), position.z));
+            Block::Position(position.x, position.y - (position.y / MINECRAFT_CHUNK_SECTIONS * MINECRAFT_CHUNK_SIZE), position.z));
 }
 
 void FullChunk::SetChunkState(const Block::Position &position, Block::State state)
 {
     sections[position.y / MINECRAFT_CHUNK_SECTIONS]->SetChunkState(
-            Block::Position(position.x, position.y - (position.y / MINECRAFT_CHUNK_SECTIONS), position.z), state);
+            Block::Position(position.x, position.y - (position.y / MINECRAFT_CHUNK_SECTIONS * MINECRAFT_CHUNK_SIZE), position.z), state);
 }
 
 void FullChunk::Update() const

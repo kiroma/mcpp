@@ -16,7 +16,7 @@
 //  Constructor: Allocate resources
 // --------------------------------------------------------------
 Chunk::Chunk(World *world, FullChunk *parent, int y_position)
-        : count(0), parent(*parent), y_position(y_position)
+        : count(0), parent(*parent), y_position(y_position), needsRebuild(true)
 {
     // Generate VBOs
     memset(vbos, -1, 16 * sizeof(unsigned int));
@@ -46,12 +46,7 @@ Chunk::Chunk(World *world, FullChunk *parent, int y_position)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // Update chunk itself
-    srand((unsigned int) this);
-    memset(blocks, 0, MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SIZE * sizeof(Block::State));
-    SetChunkState(Block::Position(0, 0, 0), Block::State(1));
-
-    needsRebuild = true;
+    // Update the chunk itself
     Update();
 }
 
@@ -83,11 +78,6 @@ Chunk::~Chunk()
 // --------------------------------------------------------------
 void Chunk::SetChunkState(const Block::Position &position, Block::State state)
 {
-    if ((position.x > MINECRAFT_CHUNK_SIZE || position.x < 0) ||
-        (position.y > MINECRAFT_CHUNK_SIZE || position.y < 0) ||
-        (position.z > MINECRAFT_CHUNK_SIZE || position.z < 0))
-        return;
-
     blocks[position.x][position.y][position.z] = state;
     needsRebuild = true;
 }
@@ -98,13 +88,6 @@ void Chunk::SetChunkState(const Block::Position &position, Block::State state)
 // --------------------------------------------------------------
 Block::State Chunk::GetChunkState(const Block::Position &position) const
 {
-    if ((position.x > MINECRAFT_CHUNK_SIZE || position.x < 0) ||
-        (position.y > MINECRAFT_CHUNK_SIZE || position.y < 0) ||
-        (position.z > MINECRAFT_CHUNK_SIZE || position.z < 0)) {
-        Block::State air;
-        return air;
-    }
-
     return blocks[position.x][position.y][position.z];
 }
 

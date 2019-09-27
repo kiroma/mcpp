@@ -14,7 +14,7 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
                                 GLenum severity,
                                 GLsizei length, const GLchar *message, const void *userParam)
 {
-    std::cout << "OpenGL debug callback: \"" << message << "\"" << std::endl;
+    //std::cout << "OpenGL debug callback: \"" << message << "\"" << std::endl;
 }
 
 Minecraft::Minecraft()
@@ -46,7 +46,9 @@ int Minecraft::Run()
     if (!i) return i;
 
     // Game loop
+    sf::Clock clock;
     while (running) {
+        // Event handling
         sf::Event event;
         while (window->pollEvent(event)) {
             switch (event.type) {
@@ -75,11 +77,15 @@ int Minecraft::Run()
             }
         }
 
+        // Record the time the last tick took
+        deltaTime = clock.restart().asSeconds();
+
+        // Player input
+        auto mousePos = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
+
         if (GetInput(sf::Keyboard::Key::Escape)) {
             gameFocus = false;
         }
-
-        auto mousePos = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
 
         if (gameFocus) {
             window->setMouseCursorVisible(false);
@@ -92,31 +98,11 @@ int Minecraft::Run()
         auto mouseNew = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
         mousePosition += mousePos - mouseNew;
 
-        glPushMatrix();
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        glDepthMask(true);
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glFrontFace(GL_CCW);
-
-        glEnable(GL_TEXTURE_2D);
-
-        glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Game logic
+        world->Tick();
 
         // :D
         masterRenderer->RenderWorld(*world);
-
-        glDepthMask(false);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_TEXTURE_2D);
-
-        glPopMatrix();
-
         window->display();
     }
 
@@ -195,6 +181,9 @@ int Minecraft::StartGame()
     masterRenderer = new RenderMaster;
     Block::Database::Initialize();
     world = new World;
+
+    // Spawn the camera
+    masterRenderer->LoadCamera(new Camera(glm::vec3(0, world->GetHighestPoint(glm::ivec2(0, 0)) + 2, 0)));
 
     // Make sure we are in a consistent state
     UpdateProjection();

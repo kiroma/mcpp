@@ -5,10 +5,10 @@
 
 #include <glm.hpp>
 
-class Camera : protected Entity
+class Camera : public Entity
 {
 public:
-    Camera();
+    Camera(glm::vec3 position);
 
     void Update();
     glm::mat4 GenerateViewMatrix() const;

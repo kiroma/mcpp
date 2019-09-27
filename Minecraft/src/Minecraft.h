@@ -34,6 +34,8 @@ public:
     { return *masterRenderer; }
     const World &GetCurrentWorld() const
     { return *world; }
+    float GetDeltaTime() const
+    { return deltaTime; }
 
 private:
     int StartGame();
@@ -42,6 +44,7 @@ private:
     bool input[4096];
     glm::vec2 mousePosition;
     bool gameFocus;
+    float deltaTime;
 
     RenderMaster *masterRenderer;
     World *world;

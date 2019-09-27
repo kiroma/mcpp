@@ -45,20 +45,21 @@ void Block::Database::Initialize()
     // Register blocks
     RegisterBlock(0, nullptr, -1, "Air");
     RegisterBlock(1, nullptr, 0, "Stone");
-    RegisterBlock(2, nullptr, 1, "Dirt");
-    RegisterBlock(3, nullptr, 2, "Gravel");
-    RegisterBlock(4, nullptr, 3, "Oak Planks");
-    RegisterBlock(5, nullptr, 4, "Stone Bricks");
-    RegisterBlock(6, nullptr, 5, "TNT");
-    RegisterBlock(7, nullptr, 6, "Yellow Hardened Clay");
-    RegisterBlock(8, nullptr, 7, "Diamond Block");
-    RegisterBlock(9, nullptr, nullptr, "Coal Ore");
-    RegisterBlock(10, nullptr, nullptr, "Diamond Ore");
-    RegisterBlock(11, nullptr, nullptr, "Emerald Ore");
-    RegisterBlock(12, nullptr, nullptr, "Gold Ore");
-    RegisterBlock(13, nullptr, nullptr, "Iron Ore");
-    RegisterBlock(14, nullptr, nullptr, "Lapis Ore");
-    RegisterBlock(15, nullptr, nullptr, "Redstone Ore");
+    RegisterBlock(2, nullptr, 1, "Grass");
+    RegisterBlock(3, nullptr, 2, "Dirt");
+    RegisterBlock(4, nullptr, 3, "Cobblestone");
+    RegisterBlock(5, nullptr, 4, "Oak Planks");
+    RegisterBlock(6, nullptr, 5, "Oak Sapling");
+    RegisterBlock(7, nullptr, 6, "Bedrock");
+    RegisterBlock(8, nullptr, 7, "Flowing Water");
+    RegisterBlock(9, nullptr, 8, "Water");
+    RegisterBlock(11, nullptr, 9, "Flowing Lava");
+    RegisterBlock(12, nullptr, 10, "Lava");
+    RegisterBlock(13, nullptr, 11, "Sand");
+    RegisterBlock(14, nullptr, 12, "Gravel");
+    RegisterBlock(15, nullptr, 13, "Gold Ore");
+    RegisterBlock(16, nullptr, 14, "Iron Ore");
+    RegisterBlock(17, nullptr, 15, "Coal Ore");
 }
 
 void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertices,
@@ -93,5 +94,5 @@ void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertic
     RegisterBlock(id, faceVertices, atlas_id != -1 ? texturecoords : nullptr, displayName);
 }
 
-Block::Block &Block::Database::GetBlock(int id)
+const Block::Block &Block::Database::GetBlock(int id)
 { return *blocks[id]; }

@@ -7,7 +7,7 @@
 
 namespace Block
 {
-    struct Position : glm::i64vec3
+    struct Position : glm::ivec3
     {
         Position(int x, int y, int z)
         {
@@ -54,7 +54,7 @@ namespace Block
                            const std::vector<float> *textureCoordinates, const char *displayName);
         void RegisterBlock(int id, const std::vector<float> *faceVertices,
                            int atlas_id, const char *displayName);
-        Block &GetBlock(int id);
+        const Block &GetBlock(int id);
     }
 }
 
