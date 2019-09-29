@@ -4,7 +4,7 @@
 #include "BlockFace.h"
 #include "FullChunk.h"
 #include "../utils/Vectors.h"
-#include "../utils/DirectionVectors.h"
+#include "../utils/math/DirectionVectors.h"
 
 #include <iostream>
 #include <vector>
@@ -12,12 +12,39 @@
 #include <vec3.hpp>
 #include <GL/glew.h>
 
+Chunk::Chunk(World *world, FullChunk *parent, int section_number)
+        : count(0), parent(*parent), sectionNumber(section_number), needsRebuild(true), loaded(false)
+{}
+
 // --------------------------------------------------------------
-//  Constructor: Allocate resources
+//  Destructor: Clean up
 // --------------------------------------------------------------
-Chunk::Chunk(World *world, FullChunk *parent, int y_position)
-        : count(0), parent(*parent), y_position(y_position), needsRebuild(true)
+Chunk::~Chunk()
 {
+    // Release resources
+    FreeMemory();
+
+    // Delete VBOs and VAO
+    for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
+        glDeleteBuffers(1, &vbos[i]);
+    }
+
+    glDeleteBuffers(1, &iboID);
+    glDeleteVertexArrays(1, &vaoID);
+
+    // Make sure no VAO or VBO is bound (heaven forbid using a deleted buffer)
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Chunk::Load()
+{
+    // Make sure you don't call this function twice
+    if (loaded)
+        return;
+    loaded = true;
+
     // Generate VBOs
     memset(vbos, -1, 16 * sizeof(unsigned int));
     for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
@@ -45,31 +72,6 @@ Chunk::Chunk(World *world, FullChunk *parent, int y_position)
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // Update the chunk itself
-    Update();
-}
-
-// --------------------------------------------------------------
-//  Destructor: Clean up
-// --------------------------------------------------------------
-Chunk::~Chunk()
-{
-    // Release resources
-    FreeMemory();
-
-    // Delete VBOs and VAO
-    for (int i = 0; i < MINECRAFT_CHUNK_VBO_COUNT; i++) {
-        glDeleteBuffers(1, &vbos[i]);
-    }
-
-    glDeleteBuffers(1, &iboID);
-    glDeleteVertexArrays(1, &vaoID);
-
-    // Make sure no VAO or VBO is bound (heaven forbid using a deleted buffer)
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // --------------------------------------------------------------
@@ -78,6 +80,25 @@ Chunk::~Chunk()
 // --------------------------------------------------------------
 void Chunk::SetChunkState(const Block::Position &position, Block::State state)
 {
+    if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 0) ||
+        (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 0) ||
+        (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 0)) {
+
+        // Set a position outside this chunk
+        int section = sectionNumber + floor(position.y / MINECRAFT_CHUNK_SIZE);
+        if (section <= 0)
+            return;
+        
+        Chunk chunk = parent.GetSection(section);
+        if (position.y < 0) {
+            chunk.SetChunkState(
+                    Block::Position(position.x, MINECRAFT_CHUNK_SIZE - position.y, position.z), state);
+        } else {
+            chunk.SetChunkState(
+                    Block::Position(position.x, position.y % MINECRAFT_CHUNK_SIZE, position.z), state);
+        }
+    }
+
     blocks[position.x][position.y][position.z] = state;
     needsRebuild = true;
 }
@@ -88,6 +109,24 @@ void Chunk::SetChunkState(const Block::Position &position, Block::State state)
 // --------------------------------------------------------------
 Block::State Chunk::GetChunkState(const Block::Position &position) const
 {
+    if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 0) ||
+        (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 0) ||
+        (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 0)) {
+
+        // Get a position outside this chunk
+        int section = sectionNumber + floor(position.y / MINECRAFT_CHUNK_SIZE);
+        if (section <= 0)
+            return 0;
+
+        if (position.y < 0) {
+            return parent.GetSection(section).GetChunkState(
+                    Block::Position(position.x, MINECRAFT_CHUNK_SIZE - position.y, position.z));
+        } else {
+            return parent.GetSection(section).GetChunkState(
+                    Block::Position(position.x, position.y % MINECRAFT_CHUNK_SIZE, position.z));
+        }
+    }
+
     return blocks[position.x][position.y][position.z];
 }
 
@@ -98,9 +137,10 @@ Block::State Chunk::GetChunkState(const Block::Position &position) const
 // --------------------------------------------------------------
 void Chunk::Update()
 {
-    if (needsRebuild) {
+    if (!loaded) {
+        Load();
+    } else if (needsRebuild) {
         Remesh();
-        needsRebuild = false;
     }
 }
 
@@ -112,8 +152,10 @@ void Chunk::Remesh()
     using namespace BlockFace;
 
 #ifdef MINECRAFT_DEBUG
-    std::cout << "Remeshing chunk " << std::hex << this << "..." << std::endl;
+    //std::cout << "Remeshing chunk " << std::hex << this << "..." << std::endl;
 #endif
+
+    needsRebuild = false;
 
     FreeMemory();
     indicesIndex = 0;
@@ -182,7 +224,6 @@ void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector
 bool Chunk::ShouldMakeBlockFaceAdjacentTo(const Block::Position &position)
 {
     if ((position.x > MINECRAFT_CHUNK_SIZE - 1 || position.x < 0) ||
-        (position.y > MINECRAFT_CHUNK_SIZE - 1 || position.y < 0) ||
         (position.z > MINECRAFT_CHUNK_SIZE - 1 || position.z < 0)) {
         return true;
     }

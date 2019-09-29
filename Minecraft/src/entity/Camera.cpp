@@ -2,6 +2,7 @@
 #include "../Minecraft.h"
 
 #include <gtc/matrix_transform.hpp>
+#include <iostream>
 
 #define MOVEMENT_SPEED ((float)5.0)
 #define RUN_MULTIPLIER ((float)5.0)
@@ -9,7 +10,9 @@
 
 Camera::Camera(glm::vec3 position)
         : Entity(position)
-{}
+{
+    std::cout << "Camera instantiated" << std::endl;
+}
 
 void Camera::Update()
 {

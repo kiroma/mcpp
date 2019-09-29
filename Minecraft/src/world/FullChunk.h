@@ -12,6 +12,7 @@ class FullChunk
 public:
     FullChunk(World &world, glm::ivec2 position);
     ~FullChunk();
+    void Load() const;
 
     Block::State GetChunkState(const Block::Position &position) const;
     void SetChunkState(const Block::Position &position, Block::State state);

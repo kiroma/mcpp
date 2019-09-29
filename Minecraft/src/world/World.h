@@ -4,10 +4,13 @@
 #include "FullChunk.h"
 #include "../Minecraft.h"
 #include "../render/RenderMaster.h"
+#include "../utils/math/SimplexNoise.h"
 
 #include <unordered_map>
+#include <queue>
+#include <SFML/System.hpp>
 
-#define MINECRAFT_RENDER_DISTANCE 6
+#define MINECRAFT_RENDER_DISTANCE 8
 
 struct KeyFuncs
 {
@@ -21,12 +24,12 @@ struct KeyFuncs
 class World
 {
 public:
-    World();
+    World(unsigned int seed);
     ~World();
 
     void Tick();
+    void GLTick();
 
-    FullChunk *CreateChunk(glm::ivec2 position);
     FullChunk *GenerateChunk(glm::ivec2 position);
     void DeleteChunk(glm::ivec2 position);
 
@@ -50,6 +53,11 @@ public:
 
 private:
     std::unordered_map<glm::ivec2, FullChunk *, KeyFuncs, KeyFuncs> chunks;
+    std::deque<FullChunk*> chunkQueue;
+    sf::Thread *worldThread;
+    bool running;
+    SimplexNoise noiseGenerator;
+    unsigned int seed;
 };
 
 #endif //MINECRAFT_WORLD_H

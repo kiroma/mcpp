@@ -17,8 +17,9 @@ class Chunk
 {
 public:
     // Constructor & destructor
-    Chunk(World *world, FullChunk *parent, int y_position);
+    Chunk(World *world, FullChunk *parent, int section_number);
     ~Chunk();
+    void Load();
 
     // Block management
     void SetChunkState(const Block::Position &position, Block::State state);
@@ -53,7 +54,7 @@ private:
 
     // Chunk updating
     bool needsRebuild;
-    int y_position;
+    int sectionNumber;
     const FullChunk &parent;
 
     // OpenGL
@@ -64,6 +65,7 @@ private:
     std::vector<unsigned int> indices;
     std::vector<float> textureCoords;
     unsigned int indicesIndex;
+    bool loaded = false;
 };
 
 #endif //MINECRAFT_CHUNK_H

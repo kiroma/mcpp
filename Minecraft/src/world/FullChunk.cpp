@@ -18,6 +18,12 @@ FullChunk::~FullChunk()
     sections.shrink_to_fit();
 }
 
+void FullChunk::Load() const
+{
+    for (int i = 0; i < MINECRAFT_CHUNK_SECTIONS; i++)
+        sections[i]->Load();
+}
+
 Block::State FullChunk::GetChunkState(const Block::Position &position) const
 {
     return sections[position.y / MINECRAFT_CHUNK_SECTIONS]->GetChunkState(

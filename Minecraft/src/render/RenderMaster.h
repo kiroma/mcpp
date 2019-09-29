@@ -26,11 +26,14 @@ public:
     { return *textureSolidBlocks; }
     const Camera &GetViewCamera() const
     { return *camera; }
+    bool IsCameraAvailable() const
+    { return cameraLoaded; }
 
 private:
     Shader *shaderSolidBlock;
     TextureAtlas *textureSolidBlocks;
     Camera *camera;
+    bool cameraLoaded = false;
 
     // World rendering routines
     void RenderChunks(const World &world);

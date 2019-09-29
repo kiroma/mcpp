@@ -114,5 +114,6 @@ void RenderMaster::RenderChunks(const World &world)
 
 void RenderMaster::LoadCamera(Camera *camera)
 {
+    if (camera == nullptr) cameraLoaded = false; else cameraLoaded = true;
     this->camera = camera;
 }

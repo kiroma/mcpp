@@ -98,8 +98,8 @@ int Minecraft::Run()
         auto mouseNew = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
         mousePosition += mousePos - mouseNew;
 
-        // Game logic
-        world->Tick();
+        // Upload chunks in the world to their respective VAOs and VBOs
+        world->GLTick();
 
         // :D
         masterRenderer->RenderWorld(*world);
@@ -116,19 +116,13 @@ void Minecraft::Shutdown()
 }
 
 void Minecraft::Input(int vkey, bool state)
-{
-    if (input[vkey] != state) input[vkey] = state;
-}
+{ if (input[vkey] != state) input[vkey] = state; }
 
 bool Minecraft::GetInput(int vkey) const
-{
-    return input[vkey];
-}
+{ return input[vkey]; }
 
 glm::vec2 Minecraft::GetMousePosition() const
-{
-    return mousePosition;
-}
+{ return mousePosition; }
 
 void Minecraft::UpdateProjection() const
 {
@@ -180,7 +174,7 @@ int Minecraft::StartGame()
     // Initialize stuff
     masterRenderer = new RenderMaster;
     Block::Database::Initialize();
-    world = new World;
+    world = new World(time(0));
 
     // Spawn the camera
     masterRenderer->LoadCamera(new Camera(glm::vec3(0, world->GetHighestPoint(glm::ivec2(0, 0)) + 2, 0)));

@@ -1,7 +1,7 @@
 #ifndef MINECRAFT_DIRECTIONVECTORS_H
 #define MINECRAFT_DIRECTIONVECTORS_H
 
-#include "../world/Block.h"
+#include "../../world/Block.h"
 
 class DirectionVectors
 {
