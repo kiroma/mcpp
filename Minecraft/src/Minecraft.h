@@ -36,14 +36,18 @@ public:
     { return *world; }
     float GetDeltaTime() const
     { return deltaTime; }
+    const sf::RenderWindow& GetWindow() const
+    { return *window; }
+    float GetDebugFPS() const
+    { return 1.0f / deltaTime; }
 
 private:
     int StartGame();
 
     bool running;
     bool input[4096];
-    glm::vec2 mousePosition;
     bool gameFocus;
+    glm::vec2 mousePosition;
     float deltaTime;
 
     RenderMaster *masterRenderer;

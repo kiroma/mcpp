@@ -5,7 +5,7 @@
 
 namespace FileUtils
 {
-    std::string ReadFile(const char *filename);
+    const char* ReadFile(const char *filename);
     bool FileExists(const char *filename);
 }
 

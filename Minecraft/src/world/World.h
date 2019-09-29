@@ -2,6 +2,7 @@
 #define MINECRAFT_WORLD_H
 
 #include "FullChunk.h"
+#include "ChunkUpdate.h"
 #include "../Minecraft.h"
 #include "../render/RenderMaster.h"
 #include "../utils/math/SimplexNoise.h"
@@ -29,6 +30,7 @@ public:
 
     void Tick();
     void GLTick();
+    void Second();
 
     FullChunk *GenerateChunk(glm::ivec2 position);
     void DeleteChunk(glm::ivec2 position);
@@ -36,6 +38,8 @@ public:
     Block::State GetWorldState(Block::Position position) const;
     void SetWorldState(Block::Position position, Block::State state);
     int GetHighestPoint(glm::ivec2 position) const;
+
+    void RegisterChunkUpdate(UpdateType type);
 
     std::unordered_map<glm::ivec2, FullChunk *, KeyFuncs, KeyFuncs>::const_iterator RenderBegin() const
     { return chunks.begin(); }
@@ -51,6 +55,25 @@ public:
                           MINECRAFT_CHUNK_SIZE);
     }
 
+    int GetChunkUpdateState(UpdateType type) {
+        switch (type) {
+            case CREATE:
+                return updateC;
+            case DESTROY:
+                return updateD;
+            case LOAD:
+                return updateL;
+            case REMESH:
+                return updateR;
+            case ALL:
+                return updateC + updateD + updateL + updateR;
+            default:
+                break;
+        }
+
+        return 0;
+    }
+
 private:
     std::unordered_map<glm::ivec2, FullChunk *, KeyFuncs, KeyFuncs> chunks;
     std::deque<FullChunk*> chunkQueue;
@@ -58,6 +81,9 @@ private:
     bool running;
     SimplexNoise noiseGenerator;
     unsigned int seed;
+    int tupdateC, tupdateD, tupdateL, tupdateR;
+    int updateC, updateD, updateL, updateR;
+    float time = 0;
 };
 
 #endif //MINECRAFT_WORLD_H

@@ -24,10 +24,8 @@ GLuint Shader::Load()
     GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
 
-    std::string tempv = FileUtils::ReadFile(vertexPath);
-    std::string tempf = FileUtils::ReadFile(fragmentPath);
-    const char *vertexsrc = tempv.c_str();
-    const char *fragmentsrc = tempf.c_str();
+    const char* vertexsrc = FileUtils::ReadFile(vertexPath);
+    const char* fragmentsrc = FileUtils::ReadFile(fragmentPath);
 
     GLint result = GL_NO_ERROR;
 

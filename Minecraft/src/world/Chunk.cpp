@@ -13,8 +13,8 @@
 #include <GL/glew.h>
 
 Chunk::Chunk(World *world, FullChunk *parent, int section_number)
-        : count(0), parent(*parent), sectionNumber(section_number), needsRebuild(true), loaded(false)
-{}
+        : world(*world), count(0), parent(*parent), sectionNumber(section_number), needsRebuild(true), loaded(false)
+{ world->RegisterChunkUpdate(CREATE); }
 
 // --------------------------------------------------------------
 //  Destructor: Clean up
@@ -36,6 +36,8 @@ Chunk::~Chunk()
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    world.RegisterChunkUpdate(DESTROY);
 }
 
 void Chunk::Load()
@@ -72,6 +74,8 @@ void Chunk::Load()
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    world.RegisterChunkUpdate(LOAD);
 }
 
 // --------------------------------------------------------------
@@ -88,7 +92,7 @@ void Chunk::SetChunkState(const Block::Position &position, Block::State state)
         int section = sectionNumber + floor(position.y / MINECRAFT_CHUNK_SIZE);
         if (section <= 0)
             return;
-        
+
         Chunk chunk = parent.GetSection(section);
         if (position.y < 0) {
             chunk.SetChunkState(
@@ -211,6 +215,8 @@ void Chunk::Remesh()
     glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
     glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(float), &textureCoords[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    world.RegisterChunkUpdate(REMESH);
 }
 
 void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,

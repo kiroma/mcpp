@@ -16,7 +16,7 @@ World::World(unsigned int seed)
         std::cout << "Started world generator" << std::endl;
         while (running) {
             Tick();
-            sf::sleep(sf::milliseconds(2000));
+            sf::sleep(sf::milliseconds(1000));
         }
 
         std::cout << "Stopped world generator" << std::endl;
@@ -55,6 +55,14 @@ void World::Tick()
 
 void World::GLTick()
 {
+    // Count update stats
+    if (time > 1.0f) {
+        time = 0;
+        Second();
+    } else {
+        time += Minecraft::GetInstance().GetDeltaTime();
+    }
+
     // Load all chunks in the queue
     if (!chunkQueue.empty()) {
         FullChunk *chunk = chunkQueue.front();
@@ -83,6 +91,18 @@ void World::GLTick()
             it->second->Update();
         }
     }
+}
+
+void World::Second()
+{
+    updateC = tupdateC;
+    updateD = tupdateD;
+    updateL = tupdateL;
+    updateR = tupdateR;
+    tupdateC = 0;
+    tupdateD = 0;
+    tupdateL = 0;
+    tupdateR = 0;
 }
 
 FullChunk *World::GenerateChunk(glm::ivec2 position)
@@ -147,4 +167,24 @@ int World::GetHighestPoint(glm::ivec2 position) const
             return y;
     }
     return 0;
+}
+
+void World::RegisterChunkUpdate(UpdateType type)
+{
+    switch (type) {
+        case CREATE:
+            tupdateC++;
+            break;
+        case DESTROY:
+            tupdateD++;
+            break;
+        case LOAD:
+            tupdateL++;
+            break;
+        case REMESH:
+            tupdateR++;
+            break;
+        default:
+            break;
+    }
 }

@@ -2,6 +2,7 @@
 
 #include "../world/World.h"
 #include "../world/Chunk.h"
+#include "FontRenderer.h"
 
 #include <iostream>
 #include <unordered_map>
@@ -14,6 +15,9 @@ RenderMaster::RenderMaster()
     textureSolidBlocks = new TextureAtlas("../res/textures/atlas.png", 16);
     shaderSolidBlock = new Shader("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
     shaderSolidBlock->Uniform1f("main_texture", glm::vec1(0));
+
+    // Initialize the font renderer
+    FontRenderer::Inititalize("../res/textures/font/ascii.png");
 }
 
 RenderMaster::~RenderMaster()
@@ -26,7 +30,7 @@ RenderMaster::~RenderMaster()
 // --------------------------------------------------------------
 //  Render the world
 // --------------------------------------------------------------
-void RenderMaster::RenderWorld(const World &world)
+void RenderMaster::RenderWorld(World &world)
 {
     // Prepare
     glPushMatrix();
@@ -46,6 +50,21 @@ void RenderMaster::RenderWorld(const World &world)
 
     // Render chunks
     RenderChunks(world);
+
+    // Render GUI
+    const Minecraft &minecraft = Minecraft::GetInstance();
+    const Camera &camera = minecraft.GetMasterRenderer().GetViewCamera();
+
+    char buffer[65536];
+    sprintf(buffer, "Minecraft C++ %d FPS (D %.3f)", (int) minecraft.GetDebugFPS(),
+            Minecraft::GetInstance().GetDeltaTime());
+    FontRenderer::DrawString(buffer, glm::ivec2(1, 1));
+    sprintf(buffer, "%d chunk updates (C %d D %d L %d R %d)", world.GetChunkUpdateState(ALL),
+            world.GetChunkUpdateState(CREATE), world.GetChunkUpdateState(DESTROY), world.GetChunkUpdateState(LOAD),
+            world.GetChunkUpdateState(REMESH));
+    FontRenderer::DrawString(buffer, glm::ivec2(1, 8 + 1));
+    sprintf(buffer, "X %.2f Y %.2f Z %.2f", camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+    FontRenderer::DrawString(buffer, glm::ivec2(1, (2 * 8) + 1));
 
     // Leave it as it was
     glDepthMask(false);

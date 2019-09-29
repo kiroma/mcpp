@@ -5,13 +5,15 @@
 
 namespace FileUtils
 {
-    std::string ReadFile(const char *filename)
+    const char* ReadFile(const char *filename)
     {
-        if (!FileExists(filename))
-            return std::string("Unable to load file.");
+        if (!FileExists(filename)) {
+            std::cerr << "Unable to read \"" << filename << "\". File doesn't exist.";
+            return nullptr;
+        }
 
         // Open file for reading in text mode
-        FILE *file = fopen(filename, "rt");
+        FILE *file = fopen(filename, "rb");
 
         if (file == NULL) {
             std::cerr << "Unable to read \"" << filename << "\".";
@@ -29,12 +31,8 @@ namespace FileUtils
         fread(data, 1, length, file);
         fclose(file);
 
-        // Prepare result and free memory
-        std::string result(data);
-        delete[] data;
-
         // Return the result
-        return result;
+        return data;
     }
 
     bool FileExists(const char *filename)
@@ -44,6 +42,7 @@ namespace FileUtils
             fclose(file);
             return true;
         }
+
         return false;
     }
 }

@@ -1,0 +1,12 @@
+#ifndef MINECRAFT_CHUNKUPDATE_H
+#define MINECRAFT_CHUNKUPDATE_H
+
+enum UpdateType {
+    CREATE,
+    DESTROY,
+    LOAD,
+    REMESH,
+    ALL
+};
+
+#endif //MINECRAFT_CHUNKUPDATE_H

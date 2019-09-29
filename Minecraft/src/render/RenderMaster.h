@@ -16,7 +16,7 @@ public:
     RenderMaster();
     ~RenderMaster();
 
-    void RenderWorld(const World &world);
+    void RenderWorld(World &world);
     void SubmitProjection(const glm::mat4 projection) const;
     void LoadCamera(Camera *camera);
 

@@ -56,6 +56,7 @@ private:
     bool needsRebuild;
     int sectionNumber;
     const FullChunk &parent;
+    World &world;
 
     // OpenGL
     unsigned int vaoID, iboID, count;
