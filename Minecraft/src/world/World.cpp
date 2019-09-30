@@ -13,6 +13,8 @@ World::World(unsigned int seed)
     // Create the chunk generating thread
     running = true;
     worldThread = new sf::Thread([this] {
+        sf::sleep(sf::milliseconds(
+                100)); // sleep for some time, to let other stuff run before begining, almost used as a yield
         std::cout << "Started world generator" << std::endl;
         while (running) {
             Tick();

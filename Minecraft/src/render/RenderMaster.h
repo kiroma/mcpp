@@ -37,6 +37,7 @@ private:
 
     // World rendering routines
     void RenderChunks(const World &world);
+    void RenderGUI();
 };
 
 #endif //MINECRAFT_RENDERMASTER_H

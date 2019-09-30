@@ -53,9 +53,6 @@ void FontRenderer::DrawString(const char *text, glm::ivec2 pos, sf::Color color)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto mat = glm::ortho(0.0f, (float) Minecraft::GetInstance().GetWindow().getSize().x / 3,
-                          (float) Minecraft::GetInstance().GetWindow().getSize().y / 3, 0.0f);
-
     glBindVertexArray(vaoID);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -64,7 +61,7 @@ void FontRenderer::DrawString(const char *text, glm::ivec2 pos, sf::Color color)
     glBindTexture(GL_TEXTURE_2D, texture->GetID());
 
     shader->Enable();
-    shader->UniformMat4("matrix", mat);
+    shader->UniformMat4("matrix", Minecraft::GetInstance().GetScaledResolution().GenerateMatrix());
     shader->Uniform1f("main_texture", glm::vec1(0));
 
     int x = pos.x;

@@ -21,15 +21,14 @@ void Camera::Update()
 
     if (minecraft.HasFocus()) {
         // Translations
+        DirectionVectors vectors;
         const float speed = MOVEMENT_SPEED * (minecraft.GetInput(sf::Keyboard::Key::LControl) ? RUN_MULTIPLIER : 1) *
                             minecraft.GetDeltaTime();
+        const glm::vec3 forward = glm::vec3(glm::sin(glm::radians(rotation.y)), 0,
+                                            -glm::cos(glm::radians(rotation.y))) * speed;
+        const glm::vec3 right = glm::cross(glm::normalize(forward), glm::normalize((glm::vec3) vectors.Top())) * speed;
 
         // Forward & backward
-        DirectionVectors vectors;
-        const glm::vec3 forward = glm::vec3(glm::sin(glm::radians(rotation.y)), 0,
-                                           -glm::cos(glm::radians(rotation.y))) * speed;
-        const glm::vec3 right = glm::cross(glm::normalize(forward), glm::normalize((glm::vec3)vectors.Top())) * speed;
-
         Translate(minecraft.GetInput(sf::Keyboard::Key::W), forward);
         Translate(minecraft.GetInput(sf::Keyboard::Key::S), -forward);
 

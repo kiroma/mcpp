@@ -5,6 +5,9 @@
 #include <gtc/matrix_transform.hpp>
 #include <SFML/Graphics.hpp>
 
+#include "gui/ScaledResolution.h"
+#include "gui/GuiScreen.h"
+
 class RenderMaster;
 
 class World;
@@ -21,13 +24,14 @@ public:
     void Input(int vkey, bool state);
     bool GetInput(int vkey) const;
     glm::vec2 GetMousePosition() const;
-    bool HasFocus()
-    { return gameFocus; }
 
     void UpdateProjection() const;
+    void DisplayGuiScreen(GuiScreen *gui_screen);
 
     // Getters
     static Minecraft &GetInstance();
+    bool HasFocus()
+    { return gameFocus; }
     bool IsRunning() const volatile
     { return running; }
     const RenderMaster &GetMasterRenderer() const
@@ -40,6 +44,10 @@ public:
     { return *window; }
     float GetDebugFPS() const
     { return 1.0f / deltaTime; }
+    ScaledResolution &GetScaledResolution() const
+    { return *scaledRes; }
+    GuiScreen *GetCurrentGUIScreen() const
+    { return currentScreen; }
 
 private:
     int StartGame();
@@ -52,8 +60,11 @@ private:
 
     RenderMaster *masterRenderer;
     World *world;
+    ScaledResolution *scaledRes;
 
     sf::RenderWindow *window;
+
+    GuiScreen *currentScreen;
 };
 
 #endif //MINECRAFT_MINECRAFT_H

@@ -4,6 +4,7 @@
 #include "world/World.h"
 #include "world/Block.h"
 #include "performance/ChunkStatistics.h"
+#include "gui/GuiDebug.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -58,6 +59,7 @@ int Minecraft::Run()
                     return false;
                 case sf::Event::Resized:
                     UpdateProjection();
+                    scaledRes->RealResize(event.size.width, event.size.height);
                     std::cout << "Window resized to " << (float) event.size.width << " * " << (float) event.size.height
                               << std::endl;
                     break;
@@ -136,6 +138,16 @@ void Minecraft::UpdateProjection() const
     glViewport(0, 0, (float) window->getSize().x, (float) window->getSize().y);
 }
 
+void Minecraft::DisplayGuiScreen(GuiScreen *gui_screen)
+{
+    GuiScreen *last = currentScreen;
+    if (last != nullptr) {
+        delete last;
+    }
+
+    currentScreen = gui_screen;
+}
+
 // --------------------------------------------------------------
 //  Initialize game window, pixel format,
 //  OpenGL and modern OpenGL
@@ -152,7 +164,7 @@ int Minecraft::StartGame()
     window = new sf::RenderWindow;
     window->create(sf::VideoMode(1440, 720), std::move("Minecraft C++"),
                    sf::Style::Default, settings);   // 2:1 aspect ratio
-    window->setFramerateLimit(120);
+    //window->setFramerateLimit(240);
 
     GLenum error = glewInit();
     if (error != GLEW_NO_ERROR) {
@@ -163,6 +175,9 @@ int Minecraft::StartGame()
 
     std::cout << "OpenGL " << glGetString(GL_VERSION) << " " << glGetString(GL_RENDERER) << " "
               << glGetString(GL_VENDOR) << " GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+    scaledRes = new ScaledResolution(window->getSize().x, window->getSize().y);
+    scaledRes->SetScaleFactor(3);
 
 #ifdef MINECRAFT_DEBUG
     glEnable(GL_DEBUG_OUTPUT);
@@ -185,6 +200,9 @@ int Minecraft::StartGame()
 
     // Make sure we are in a consistent state
     UpdateProjection();
+
+    // Initialize the GUI
+    DisplayGuiScreen(new GuiDebug());
 }
 
 // --------------------------------------------------------------

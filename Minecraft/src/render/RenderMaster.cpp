@@ -49,27 +49,11 @@ void RenderMaster::RenderWorld(World &world)
     glClearColor(0.2f, 0.8f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Render chunks
+    // Render stuff
     RenderChunks(world);
+    RenderGUI();
 
-    // Render GUI
-    const Minecraft &minecraft = Minecraft::GetInstance();
-    const Camera &camera = minecraft.GetMasterRenderer().GetViewCamera();
-
-    char buffer[65536];
-    sprintf(buffer, "Minecraft C++ %d FPS (DT %.4f)", (int) minecraft.GetDebugFPS(),
-            Minecraft::GetInstance().GetDeltaTime());
-    FontRenderer::DrawString(buffer, glm::ivec2(1, 1));
-    sprintf(buffer, "%d chunk updates (C %d D %d L %d R %d)", ChunkStatistics::GetChunkUpdates(ChunkStatistics::ALL),
-            ChunkStatistics::GetChunkUpdates(ChunkStatistics::CREATE),
-            ChunkStatistics::GetChunkUpdates(ChunkStatistics::DESTROY),
-            ChunkStatistics::GetChunkUpdates(ChunkStatistics::LOAD),
-            ChunkStatistics::GetChunkUpdates(ChunkStatistics::REMESH));
-    FontRenderer::DrawString(buffer, glm::ivec2(1, 8 + 1));
-    sprintf(buffer, "X %.2f Y %.2f Z %.2f", camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
-    FontRenderer::DrawString(buffer, glm::ivec2(1, (2 * 8) + 1));
-
-    // Leave it as it was
+    // Leave the OpenGL state as it was
     glDepthMask(false);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -132,6 +116,14 @@ void RenderMaster::RenderChunks(const World &world)
     }
 
     shaderSolidBlock->Disable();
+}
+
+void RenderMaster::RenderGUI()
+{
+    GuiScreen *currentscreen = Minecraft::GetInstance().GetCurrentGUIScreen();
+    if (currentscreen != nullptr) {
+        currentscreen->DrawScreen();
+    }
 }
 
 void RenderMaster::LoadCamera(Camera *camera)
