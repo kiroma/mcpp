@@ -5,7 +5,7 @@
 
 namespace FileUtils
 {
-    const char* ReadFile(const char *filename)
+    const char *ReadFile(const char *filename)
     {
         if (!FileExists(filename)) {
             std::cerr << "Unable to read \"" << filename << "\". File doesn't exist.";

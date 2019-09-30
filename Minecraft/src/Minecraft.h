@@ -36,7 +36,7 @@ public:
     { return *world; }
     float GetDeltaTime() const
     { return deltaTime; }
-    const sf::RenderWindow& GetWindow() const
+    const sf::RenderWindow &GetWindow() const
     { return *window; }
     float GetDebugFPS() const
     { return 1.0f / deltaTime; }

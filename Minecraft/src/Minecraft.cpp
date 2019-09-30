@@ -3,6 +3,7 @@
 #include "render/RenderMaster.h"
 #include "world/World.h"
 #include "world/Block.h"
+#include "performance/ChunkStatistics.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -101,6 +102,9 @@ int Minecraft::Run()
         // Upload chunks in the world to their respective VAOs and VBOs
         world->GLTick();
 
+        // Update profilers and performance counters
+        ChunkStatistics::Update();
+
         // :D
         masterRenderer->RenderWorld(*world);
         window->display();
@@ -187,6 +191,4 @@ int Minecraft::StartGame()
 //  Get a static reference to the running game
 // --------------------------------------------------------------
 Minecraft &Minecraft::GetInstance()
-{
-    return *instance;
-}
+{ return *instance; }

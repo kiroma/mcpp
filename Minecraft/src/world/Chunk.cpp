@@ -5,6 +5,7 @@
 #include "FullChunk.h"
 #include "../utils/Vectors.h"
 #include "../utils/math/DirectionVectors.h"
+#include "../performance/ChunkStatistics.h"
 
 #include <iostream>
 #include <vector>
@@ -14,7 +15,7 @@
 
 Chunk::Chunk(World *world, FullChunk *parent, int section_number)
         : world(*world), count(0), parent(*parent), sectionNumber(section_number), needsRebuild(true), loaded(false)
-{ world->RegisterChunkUpdate(CREATE); }
+{ ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::CREATE); }
 
 // --------------------------------------------------------------
 //  Destructor: Clean up
@@ -37,7 +38,7 @@ Chunk::~Chunk()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    world.RegisterChunkUpdate(DESTROY);
+    ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::DESTROY);
 }
 
 void Chunk::Load()
@@ -75,7 +76,7 @@ void Chunk::Load()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    world.RegisterChunkUpdate(LOAD);
+    ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::LOAD);
 }
 
 // --------------------------------------------------------------
@@ -216,7 +217,7 @@ void Chunk::Remesh()
     glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(float), &textureCoords[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    world.RegisterChunkUpdate(REMESH);
+    ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::REMESH);
 }
 
 void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,

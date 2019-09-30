@@ -2,6 +2,7 @@
 
 #include "../world/World.h"
 #include "../world/Chunk.h"
+#include "../performance/ChunkStatistics.h"
 #include "FontRenderer.h"
 
 #include <iostream>
@@ -56,12 +57,14 @@ void RenderMaster::RenderWorld(World &world)
     const Camera &camera = minecraft.GetMasterRenderer().GetViewCamera();
 
     char buffer[65536];
-    sprintf(buffer, "Minecraft C++ %d FPS (D %.3f)", (int) minecraft.GetDebugFPS(),
+    sprintf(buffer, "Minecraft C++ %d FPS (DT %.4f)", (int) minecraft.GetDebugFPS(),
             Minecraft::GetInstance().GetDeltaTime());
     FontRenderer::DrawString(buffer, glm::ivec2(1, 1));
-    sprintf(buffer, "%d chunk updates (C %d D %d L %d R %d)", world.GetChunkUpdateState(ALL),
-            world.GetChunkUpdateState(CREATE), world.GetChunkUpdateState(DESTROY), world.GetChunkUpdateState(LOAD),
-            world.GetChunkUpdateState(REMESH));
+    sprintf(buffer, "%d chunk updates (C %d D %d L %d R %d)", ChunkStatistics::GetChunkUpdates(ChunkStatistics::ALL),
+            ChunkStatistics::GetChunkUpdates(ChunkStatistics::CREATE),
+            ChunkStatistics::GetChunkUpdates(ChunkStatistics::DESTROY),
+            ChunkStatistics::GetChunkUpdates(ChunkStatistics::LOAD),
+            ChunkStatistics::GetChunkUpdates(ChunkStatistics::REMESH));
     FontRenderer::DrawString(buffer, glm::ivec2(1, 8 + 1));
     sprintf(buffer, "X %.2f Y %.2f Z %.2f", camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
     FontRenderer::DrawString(buffer, glm::ivec2(1, (2 * 8) + 1));

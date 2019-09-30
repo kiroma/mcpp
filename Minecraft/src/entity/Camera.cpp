@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "../Minecraft.h"
+#include "../utils/math/DirectionVectors.h"
 
 #include <gtc/matrix_transform.hpp>
 #include <iostream>
@@ -20,11 +21,23 @@ void Camera::Update()
 
     if (minecraft.HasFocus()) {
         // Translations
-        const float speed = MOVEMENT_SPEED * (minecraft.GetInput(sf::Keyboard::Key::LControl) ? RUN_MULTIPLIER : 1) * minecraft.GetDeltaTime();
-        Translate(minecraft.GetInput(sf::Keyboard::Key::W), glm::vec3(0, 0, speed));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::S), glm::vec3(0, 0, -speed));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::A), glm::vec3(speed, 0, 0));
-        Translate(minecraft.GetInput(sf::Keyboard::Key::D), glm::vec3(-speed, 0, 0));
+        const float speed = MOVEMENT_SPEED * (minecraft.GetInput(sf::Keyboard::Key::LControl) ? RUN_MULTIPLIER : 1) *
+                            minecraft.GetDeltaTime();
+
+        // Forward & backward
+        DirectionVectors vectors;
+        const glm::vec3 forward = glm::vec3(glm::sin(glm::radians(rotation.y)), 0,
+                                           -glm::cos(glm::radians(rotation.y))) * speed;
+        const glm::vec3 right = glm::cross(glm::normalize(forward), glm::normalize((glm::vec3)vectors.Top())) * speed;
+
+        Translate(minecraft.GetInput(sf::Keyboard::Key::W), forward);
+        Translate(minecraft.GetInput(sf::Keyboard::Key::S), -forward);
+
+        // Left & right
+        Translate(minecraft.GetInput(sf::Keyboard::Key::A), -right);
+        Translate(minecraft.GetInput(sf::Keyboard::Key::D), right);
+
+        // Up & down
         Translate(minecraft.GetInput(sf::Keyboard::Key::Space), glm::vec3(0, speed, 0));
         Translate(minecraft.GetInput(sf::Keyboard::Key::LShift), glm::vec3(0, -speed, 0));
 
