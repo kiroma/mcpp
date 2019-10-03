@@ -1,4 +1,5 @@
 #include "TextureAtlas.h"
+#include "Texture.h"
 
 #include <iostream>
 
@@ -11,7 +12,6 @@ const std::vector<float> TextureAtlas::GetTexture(const glm::ivec2 coords) const
     // Thanks to https://github.com/Hopson97/HopsonCraft/blob/master/Source/Texture/TextureAtlas.cpp
     static const int textures_per_axis = texture.GetSize() / blockTextureSize;
     static const float unit_size = 1.0f / (float) textures_per_axis;
-    static const float pixel_size = 1.0f / (float) texture.GetSize();
 
     float base_x = coords.x * unit_size;
     float base_y = coords.y * unit_size;

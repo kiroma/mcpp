@@ -1,17 +1,17 @@
 #include "FontRenderer.h"
 
+#include "../gui/ScaledResolution.h"
+#include "../utils/FileUtils.h"
+#include "../Minecraft.h"
 #include "Texture.h"
 #include "Shader.h"
-#include "../Minecraft.h"
-#include "../utils/FileUtils.h"
 
 #include <GL/glew.h>
 #include <iostream>
 
-#define MINECRAFT_CHARACTER_SIZE 8
-
 Texture *texture;
 Shader *shader;
+
 unsigned int vaoID, verticesID, textureCoordsID;
 
 void FontRenderer::Inititalize(const char *texture_path)
@@ -61,8 +61,10 @@ void FontRenderer::DrawString(const char *text, glm::ivec2 pos, sf::Color color)
     glBindTexture(GL_TEXTURE_2D, texture->GetID());
 
     shader->Enable();
-    shader->UniformMat4("matrix", Minecraft::GetInstance().GetScaledResolution().GenerateMatrix());
-    shader->Uniform1f("main_texture", glm::vec1(0));
+    glUniformMatrix4fv(shader->UniformLocation("matrix"), 1, false,
+                       glm::value_ptr(Minecraft::GetInstance().GetScaledResolution().GenerateMatrix()));
+    glUniform1i(shader->UniformLocation("main_texture"), 0);
+    glUniform4f(shader->UniformLocation("main_color"), color.r, color.g, color.b, color.a);
 
     int x = pos.x;
     for (const char *c = text; *c != '\0'; c++) {

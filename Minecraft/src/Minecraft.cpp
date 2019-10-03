@@ -1,10 +1,13 @@
 #include "Minecraft.h"
 
-#include "render/RenderMaster.h"
-#include "world/World.h"
-#include "world/Block.h"
 #include "performance/ChunkStatistics.h"
 #include "gui/GuiDebug.h"
+#include "gui/ScaledResolution.h"
+#include "gui/GuiScreen.h"
+#include "render/RenderMaster.h"
+#include "world/gen/OverworldGenerator.h"
+#include "world/World.h"
+#include "world/Block.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -16,7 +19,25 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
                                 GLenum severity,
                                 GLsizei length, const GLchar *message, const void *userParam)
 {
-    //std::cout << "OpenGL debug callback: \"" << message << "\"" << std::endl;
+    // Unused parameters
+    (void) source;
+    (void) type;
+    (void) id;
+    (void) severity;
+    (void) length;
+    (void) message;
+    (void) userParam;
+
+    // Useful stuff
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:
+            std::cout << "Error: \"" << message << "\" from 0x" << std::hex << source << " severity: 0x" << std::hex << severity << std::endl;
+            //Minecraft::GetInstance().Shutdown();
+            break;
+        default:
+            //std::cout << "Debug: \"" << message << "\" from 0x" << std::hex << source << " severity: 0x" << std::hex << severity << std::endl;
+            break;
+    }
 }
 
 Minecraft::Minecraft()
@@ -45,7 +66,7 @@ int Minecraft::Run()
     running = true;
     gameFocus = true;
     int i = StartGame();
-    if (!i) return i;
+    if (i != 0) return i;
 
     // Game loop
     sf::Clock clock;
@@ -164,7 +185,7 @@ int Minecraft::StartGame()
     window = new sf::RenderWindow;
     window->create(sf::VideoMode(1440, 720), std::move("Minecraft C++"),
                    sf::Style::Default, settings);   // 2:1 aspect ratio
-    //window->setFramerateLimit(240);
+    window->setFramerateLimit(120);
 
     GLenum error = glewInit();
     if (error != GLEW_NO_ERROR) {
@@ -194,15 +215,18 @@ int Minecraft::StartGame()
     masterRenderer = new RenderMaster;
     Block::Database::Initialize();
     world = new World(time(0));
+    world->LoadGenerator(std::make_unique<OverworldGenerator>());
 
     // Spawn the camera
-    masterRenderer->LoadCamera(new Camera(glm::vec3(0, world->GetHighestPoint(glm::ivec2(0, 0)) + 2, 0)));
+    masterRenderer->LoadCamera(new Camera(glm::vec3(0, world->GetHighestPoint(glm::ivec2(0, 0)) + 4, 0)));
 
     // Make sure we are in a consistent state
     UpdateProjection();
 
     // Initialize the GUI
     DisplayGuiScreen(new GuiDebug());
+
+    return 0;
 }
 
 // --------------------------------------------------------------

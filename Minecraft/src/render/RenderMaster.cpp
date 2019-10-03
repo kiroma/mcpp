@@ -1,9 +1,15 @@
 #include "RenderMaster.h"
 
+#include "../entity/Camera.h"
+#include "../gui/GuiScreen.h"
+#include "../performance/ChunkStatistics.h"
+#include "../world/FullChunk.h"
 #include "../world/World.h"
 #include "../world/Chunk.h"
-#include "../performance/ChunkStatistics.h"
 #include "FontRenderer.h"
+#include "Shader.h"
+#include "Texture.h"
+#include "TextureAtlas.h"
 
 #include <iostream>
 #include <unordered_map>
@@ -15,7 +21,7 @@ RenderMaster::RenderMaster()
     // Load textures and shaders
     textureSolidBlocks = new TextureAtlas("../res/textures/atlas.png", 16);
     shaderSolidBlock = new Shader("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
-    shaderSolidBlock->Uniform1f("main_texture", glm::vec1(0));
+    glUniform1i(shaderSolidBlock->UniformLocation("main_texture"), 0);
 
     // Initialize the font renderer
     FontRenderer::Inititalize("../res/textures/font/ascii.png");
@@ -65,7 +71,7 @@ void RenderMaster::RenderWorld(World &world)
 void RenderMaster::SubmitProjection(const glm::mat4 projection) const
 {
     shaderSolidBlock->Enable();
-    shaderSolidBlock->UniformMat4("projection_matrix", projection);
+    glUniformMatrix4fv(shaderSolidBlock->UniformLocation("projection_matrix"), 1, false, glm::value_ptr(projection));
     shaderSolidBlock->Disable();
 }
 
@@ -74,7 +80,8 @@ void RenderMaster::RenderChunks(const World &world)
     // Load shader
     camera->Update();
     shaderSolidBlock->Enable();
-    shaderSolidBlock->UniformMat4("view_matrix", camera->GenerateViewMatrix());
+    glUniformMatrix4fv(shaderSolidBlock->UniformLocation("view_matrix"), 1, false,
+                       glm::value_ptr(camera->GenerateViewMatrix()));
 
     // For every full chunk in the world
     for (auto it = world.RenderBegin(); it != world.RenderEnd(); it++) {
@@ -85,15 +92,16 @@ void RenderMaster::RenderChunks(const World &world)
             // Bind and enable stuff
             glBindVertexArray(it->second->GetSections()[i]->GetVAOID());
             for (int j = 0; j < MINECRAFT_CHUNK_SECTIONS; j++) {
-                if (it->second->GetSections()[j]->GetVBOID(j) != -1)
+                if (it->second->GetSections()[j]->GetVBOID(j) != (unsigned int) -1)
                     glEnableVertexAttribArray(j);
             }
 
             // Position chunk
             glm::ivec2 chunkpos = it->second->GetPosition();
-            shaderSolidBlock->UniformMat4("model_matrix", glm::translate(glm::mat4(1.0f), glm::vec3(
-                    chunkpos.x * MINECRAFT_CHUNK_SIZE, i * MINECRAFT_CHUNK_SIZE,
-                    chunkpos.y * MINECRAFT_CHUNK_SIZE)));
+            glUniformMatrix4fv(shaderSolidBlock->UniformLocation("model_matrix"), 1, false,
+                               glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(
+                                       chunkpos.x * MINECRAFT_CHUNK_SIZE, i * MINECRAFT_CHUNK_SIZE,
+                                       chunkpos.y * MINECRAFT_CHUNK_SIZE))));
 
             // Bind textures
             glActiveTexture(GL_TEXTURE0);
@@ -106,7 +114,7 @@ void RenderMaster::RenderChunks(const World &world)
 
             // Disable models
             for (int i = 0; i < MINECRAFT_CHUNK_SECTIONS; i++) {
-                if (it->second->GetSections()[i]->GetVBOID(i) != -1)
+                if (it->second->GetSections()[i]->GetVBOID(i) != (unsigned int) -1)
                     glDisableVertexAttribArray(i);
             }
 

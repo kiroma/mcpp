@@ -1,4 +1,8 @@
 #include "FullChunk.h"
+
+#include "Chunk.h"
+#include "World.h"
+
 #include <iostream>
 
 FullChunk::FullChunk(World &world, glm::ivec2 position)
@@ -26,6 +30,12 @@ void FullChunk::Load() const
 
 Block::State FullChunk::GetChunkState(const Block::Position &position) const
 {
+    if ((position.x > MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SECTIONS - 1 || position.x < 0) ||
+        (position.y > MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SECTIONS || position.y < 0) ||
+        (position.z > MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SECTIONS || position.z < 0)) {
+        return Block::State(0);
+    }
+
     return sections[position.y / MINECRAFT_CHUNK_SECTIONS]->GetChunkState(
             Block::Position(position.x, position.y - (position.y / MINECRAFT_CHUNK_SECTIONS * MINECRAFT_CHUNK_SIZE),
                             position.z));
@@ -33,6 +43,12 @@ Block::State FullChunk::GetChunkState(const Block::Position &position) const
 
 void FullChunk::SetChunkState(const Block::Position &position, Block::State state)
 {
+    if ((position.x > MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SECTIONS - 1 || position.x < 0) ||
+        (position.y > MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SECTIONS || position.y < 0) ||
+        (position.z > MINECRAFT_CHUNK_SIZE * MINECRAFT_CHUNK_SECTIONS || position.z < 0)) {
+        return;
+    }
+
     sections[position.y / MINECRAFT_CHUNK_SECTIONS]->SetChunkState(
             Block::Position(position.x, position.y - (position.y / MINECRAFT_CHUNK_SECTIONS * MINECRAFT_CHUNK_SIZE),
                             position.z), state);

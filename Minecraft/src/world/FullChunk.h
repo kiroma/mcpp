@@ -1,8 +1,11 @@
 #ifndef MINECRAFT_FULLCHUNK_H
 #define MINECRAFT_FULLCHUNK_H
 
-#include "Chunk.h"
-#include "World.h"
+class Chunk;
+class World;
+
+#include <ext.hpp>
+#include "Block.h"
 
 // Change for custom height chunks
 #define MINECRAFT_CHUNK_SECTIONS 16

@@ -2,10 +2,9 @@
 #define MINECRAFT_CHUNK_H
 
 class World;
+class FullChunk;
 
 #include "Block.h"
-
-class FullChunk;
 
 #include <vector>
 #include <vec3.hpp>
@@ -53,13 +52,13 @@ private:
     Block::State blocks[MINECRAFT_CHUNK_SIZE][MINECRAFT_CHUNK_SIZE][MINECRAFT_CHUNK_SIZE];
 
     // Chunk updating
+    World &world;
+    const FullChunk &parent;
     bool needsRebuild;
     int sectionNumber;
-    const FullChunk &parent;
-    World &world;
 
     // OpenGL
-    unsigned int vaoID, iboID, count;
+    unsigned int count, vaoID, iboID;
     unsigned int vbos[16];
     unsigned int vbosComponentCount[16]{3, 2}; // Add here the component count for future VBOs
     std::vector<float> vertices;

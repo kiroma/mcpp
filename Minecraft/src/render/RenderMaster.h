@@ -1,12 +1,13 @@
 #ifndef MINECRAFT_RENDERMASTER_H
 #define MINECRAFT_RENDERMASTER_H
 
-#include "Shader.h"
-#include "../entity/Camera.h"
-#include "Texture.h"
-#include "TextureAtlas.h"
-
+class Shader;
+class Camera;
+class Texture;
+class TextureAtlas;
 class World;
+
+#include <mat4x4.hpp>
 
 #define MC_RENDER_PASSES 2
 

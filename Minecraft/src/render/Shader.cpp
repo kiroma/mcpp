@@ -9,14 +9,10 @@
 
 Shader::Shader(const char *vertex_path, const char *fragment_path)
         : vertexPath(vertex_path), fragmentPath(fragment_path)
-{
-    program = Load();
-}
+{ program = Load(); }
 
 Shader::~Shader()
-{
-    glDeleteProgram(program);
-}
+{ glDeleteProgram(program); }
 
 GLuint Shader::Load()
 {
@@ -75,47 +71,13 @@ GLuint Shader::Load()
 }
 
 void Shader::Enable() const
-{
-    glUseProgram(program);
-}
+{ glUseProgram(program); }
 
 void Shader::Disable() const
-{
-    glUseProgram(0);
-}
-
-void Shader::Uniform1f(const char *uniform, glm::vec1 val) const
-{
-    glUniform1f(this->UniformLocation(uniform), val.x);
-}
-
-void Shader::Uniform2f(const char *uniform, glm::vec2 val) const
-{
-    glUniform2f(this->UniformLocation(uniform), val.x, val.y);
-}
-
-void Shader::Uniform3f(const char *uniform, glm::vec3 val) const
-{
-    glUniform3f(this->UniformLocation(uniform), val.x, val.y, val.z);
-}
-
-void Shader::Uniform4f(const char *uniform, glm::vec4 val) const
-{
-    glUniform4f(this->UniformLocation(uniform), val.x, val.y, val.z, val.w);
-}
-
-void Shader::UniformMat4(const char *uniform, glm::mat4 matrix) const
-{
-    glUniformMatrix4fv(this->UniformLocation(uniform), 1, GL_FALSE,
-                       glm::value_ptr(matrix));
-}
+{ glUseProgram(0); }
 
 GLuint Shader::GetProgramID() const
-{
-    return program;
-}
+{ return program; }
 
 GLint Shader::UniformLocation(const char *uniform) const
-{
-    return glGetUniformLocation(program, (const GLchar *) uniform);
-}
+{ return glGetUniformLocation(program, (const GLchar *) uniform); }

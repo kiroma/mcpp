@@ -1,14 +1,18 @@
 #ifndef MINECRAFT_WORLD_H
 #define MINECRAFT_WORLD_H
 
-#include "FullChunk.h"
-#include "../Minecraft.h"
-#include "../render/RenderMaster.h"
-#include "../utils/math/SimplexNoise.h"
+class IChunkGenerator;
 
+#include "../entity/Camera.h"
+#include "gen/noise/SimplexNoise.h"
+#include "../render/RenderMaster.h"
+#include "../world/Chunk.h"
+#include "../Minecraft.h"
+#include "Block.h"
+
+#include <SFML/System.hpp>
 #include <unordered_map>
 #include <queue>
-#include <SFML/System.hpp>
 
 #define MINECRAFT_RENDER_DISTANCE 8
 
@@ -30,7 +34,7 @@ public:
     void Tick();
     void GLTick();
 
-    FullChunk *GenerateChunk(glm::ivec2 position);
+    void LoadGenerator(std::unique_ptr<IChunkGenerator> gen);
     void DeleteChunk(glm::ivec2 position);
 
     Block::State GetWorldState(Block::Position position) const;
@@ -51,13 +55,17 @@ public:
                           MINECRAFT_CHUNK_SIZE);
     }
 
+    const SimplexNoise& GetNoiseGenerator()
+    { return *noiseGenerator; }
+
 private:
     std::unordered_map<glm::ivec2, FullChunk *, KeyFuncs, KeyFuncs> chunks;
     std::deque<FullChunk *> chunkQueue;
-    sf::Thread *worldThread;
-    bool running;
-    SimplexNoise noiseGenerator;
+    sf::Thread *worldThread = nullptr;
+    std::unique_ptr<SimplexNoise> noiseGenerator;
+    std::unique_ptr<IChunkGenerator> worldGenerator;
     unsigned int seed;
+    bool running;
 };
 
 #endif //MINECRAFT_WORLD_H

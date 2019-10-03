@@ -4,6 +4,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <ext.hpp>
 
+#define MINECRAFT_CHARACTER_SIZE 8
+
 namespace FontRenderer
 {
     void Inititalize(const char *texture_path);

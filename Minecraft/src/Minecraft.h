@@ -5,11 +5,11 @@
 #include <gtc/matrix_transform.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "gui/ScaledResolution.h"
-#include "gui/GuiScreen.h"
+class ScaledResolution;
+
+class GuiScreen;
 
 class RenderMaster;
-
 class World;
 
 class Minecraft
@@ -64,7 +64,7 @@ private:
 
     sf::RenderWindow *window;
 
-    GuiScreen *currentScreen;
+    GuiScreen *currentScreen = nullptr;
 };
 
 #endif //MINECRAFT_MINECRAFT_H

@@ -4,8 +4,14 @@
 // --------------------------------------------------------------
 //  Entry point
 // --------------------------------------------------------------
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char *envp[])
 {
+    // Unused parameters
+    (void) argc;
+    (void) argv;
+    (void) envp;
+
+    // Actually used
     Minecraft *minecraft = new Minecraft();
 
 #ifdef MINECRAFT_DEBUG

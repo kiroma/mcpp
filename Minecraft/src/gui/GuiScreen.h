@@ -18,8 +18,8 @@ public:
     // Events
     virtual void MouseDown(sf::Mouse::Button button) = 0;
     virtual void MouseUp(sf::Mouse::Button button) = 0;
-    virtual void KeyDown(sf::Keyboard::Key button) = 0;
-    virtual void KeyUp(sf::Keyboard::Key button) = 0;
+    virtual void KeyDown(sf::Keyboard::Key key) = 0;
+    virtual void KeyUp(sf::Keyboard::Key key) = 0;
 };
 
 #endif //MINECRAFT_GUISCREEN_H

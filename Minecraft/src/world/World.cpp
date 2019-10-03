@@ -1,36 +1,68 @@
 #include "World.h"
 
+#include "gen/IChunkGenerator.h"
+#include "FullChunk.h"
+
 #include <iostream>
 
 World::World(unsigned int seed)
-        : seed(seed), noiseGenerator(0.25f, 1.0f, 2.0f, 0.75f)
+        : seed(seed), running(false)
 {
-    // Generate spawn chunk
+    noiseGenerator = std::make_unique<SimplexNoise>(0.25f, 1.0f, 2.0f, 0.75f);
+}
+
+World::~World()
+{
+    running = false;
     chunks.clear();
-    GenerateChunk(glm::ivec2(0, 0));
-    GLTick();
+    chunkQueue.clear();
+    worldThread->wait();
+}
+
+void World::LoadGenerator(std::unique_ptr<IChunkGenerator> gen)
+{
+    // First of all, terminate the current generator, if one is present
+    if (worldThread != nullptr && running) {
+        running = false;
+        worldThread->wait();
+    }
+
+    // With that out of the way, we clear all the current chunks
+    for (auto it = chunks.begin(); it != chunks.end(); it++)
+        DeleteChunk(it->first);
+
+    for (auto it = chunkQueue.begin(); it != chunkQueue.end(); it++)
+        delete *it;
+
+    // Just in case
+    chunks.clear();
+    chunkQueue.clear();
+
+    // Now load the actual generator
+    worldGenerator.swap(gen);
+
+    // We create a spawnpoint chunk so that the player doesn't appear floating in the air
+    // and the player spawner has a way of determining the camera height
+    chunkQueue.push_front(worldGenerator->GenerateChunk(glm::ivec2(0, 0)));
 
     // Create the chunk generating thread
     running = true;
     worldThread = new sf::Thread([this] {
         sf::sleep(sf::milliseconds(
                 100)); // sleep for some time, to let other stuff run before begining, almost used as a yield
-        std::cout << "Started world generator" << std::endl;
+        std::cout << "Started world generator thread" << std::endl;
         while (running) {
             Tick();
-            sf::sleep(sf::milliseconds(1000));
+            sf::sleep(sf::milliseconds(500));
         }
 
-        std::cout << "Stopped world generator" << std::endl;
+        std::cout << "Stopped world generator thread" << std::endl;
     });
     worldThread->launch();
-}
 
-World::~World()
-{
-    chunks.clear();
-    running = false;
-    worldThread->wait();
+    // First main thread tick
+    GLTick();
+    std::cout << "Loaded world generator \"" << worldGenerator->GetDisplayName() << "\"" << std::endl;
 }
 
 void World::Tick()
@@ -48,7 +80,13 @@ void World::Tick()
             if (chunks.find(pos) == chunks.end() &&
                 std::find_if(chunkQueue.begin(), chunkQueue.end(),
                              [&](FullChunk *c) { return c->GetPosition() == pos; }) == chunkQueue.end()) {
-                GenerateChunk(pos);
+                /**
+                 * TODO:
+                 *  Find out why this crashes here.
+                 */
+
+                FullChunk *chunk = worldGenerator->GenerateChunk(pos);
+                chunkQueue.push_front(chunk);
                 break;
             }
         }
@@ -87,36 +125,6 @@ void World::GLTick()
     }
 }
 
-FullChunk *World::GenerateChunk(glm::ivec2 position)
-{
-    // Create the actual chunk
-    FullChunk *chunk = new FullChunk(*this, position);
-
-    // Generate terrain
-    for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++) {
-        for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++) {
-            int rx = x + chunk->GetPosition().x * 16;
-            int rz = z + chunk->GetPosition().y * 16; // y = z
-
-            float height = noiseGenerator.fractal(6, (float) rx / 64.0f, (float) rz / 64.0f) * 15.0f + 70.0f;
-
-            for (int i = 0; i < (int) height; i++) {
-                Block::State state(1);
-                if (i >= height - 2) {
-                    state.id = 2;
-                } else if (i >= height - 5) {
-                    state.id = 3;
-                }
-
-                chunk->SetChunkState(Block::Position(x, i, z), state);
-            }
-        }
-    }
-
-    chunkQueue.push_front(chunk);
-    return chunk;
-}
-
 void World::DeleteChunk(glm::ivec2 position)
 {
     if (chunks.find(position) == chunks.end())
@@ -148,5 +156,6 @@ int World::GetHighestPoint(glm::ivec2 position) const
         if (GetWorldState(Block::Position(position.x, y, position.y)).id != 0)
             return y;
     }
+
     return 0;
 }

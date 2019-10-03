@@ -28,10 +28,10 @@ void GuiDebug::DrawScreen()
 }
 
 void GuiDebug::MouseDown(sf::Mouse::Button button)
-{}
+{ (void) button; }
 void GuiDebug::MouseUp(sf::Mouse::Button button)
-{}
-void GuiDebug::KeyDown(sf::Keyboard::Key button)
-{}
-void GuiDebug::KeyUp(sf::Keyboard::Key button)
-{}
+{ (void) button; }
+void GuiDebug::KeyDown(sf::Keyboard::Key key)
+{ (void) key; }
+void GuiDebug::KeyUp(sf::Keyboard::Key key)
+{ (void) key; }

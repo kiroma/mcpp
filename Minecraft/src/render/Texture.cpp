@@ -28,11 +28,13 @@ Texture::Texture(const char *filename)
 
     // Load the data into the texture buffer
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+    // Delete data after it hsa been used
+    delete[] data;
 }
 
 Texture::~Texture()
 {
-    delete[] data;
     glDeleteTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

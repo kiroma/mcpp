@@ -1,11 +1,12 @@
 #include "Chunk.h"
 
-#include "World.h"
-#include "BlockFace.h"
-#include "FullChunk.h"
 #include "../utils/Vectors.h"
 #include "../utils/math/DirectionVectors.h"
 #include "../performance/ChunkStatistics.h"
+#include "World.h"
+#include "Block.h"
+#include "BlockFace.h"
+#include "FullChunk.h"
 
 #include <iostream>
 #include <vector>
@@ -14,7 +15,7 @@
 #include <GL/glew.h>
 
 Chunk::Chunk(World *world, FullChunk *parent, int section_number)
-        : world(*world), count(0), parent(*parent), sectionNumber(section_number), needsRebuild(true), loaded(false)
+        : world(*world), parent(*parent), needsRebuild(true), sectionNumber(section_number), count(0), loaded(false)
 { ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::CREATE); }
 
 // --------------------------------------------------------------
@@ -91,7 +92,7 @@ void Chunk::SetChunkState(const Block::Position &position, Block::State state)
 
         // Set a position outside this chunk
         int section = sectionNumber + floor(position.y / MINECRAFT_CHUNK_SIZE);
-        if (section <= 0)
+        if (section <= 0 || section >= MINECRAFT_CHUNK_SECTIONS - 1)
             return;
 
         Chunk chunk = parent.GetSection(section);
@@ -120,7 +121,7 @@ Block::State Chunk::GetChunkState(const Block::Position &position) const
 
         // Get a position outside this chunk
         int section = sectionNumber + floor(position.y / MINECRAFT_CHUNK_SIZE);
-        if (section <= 0)
+        if (section <= 0 || section >= MINECRAFT_CHUNK_SECTIONS - 1)
             return 0;
 
         if (position.y < 0) {

@@ -13,21 +13,13 @@ public:
     void Enable() const;
     void Disable() const;
 
-    void Uniform1f(const char *uniform, glm::vec1 val) const;
-    void Uniform2f(const char *uniform, glm::vec2 val) const;
-    void Uniform3f(const char *uniform, glm::vec3 val) const;
-    void Uniform4f(const char *uniform, glm::vec4 val) const;
-    void UniformMat4(const char *uniform, glm::mat4 matrix) const;
-
     GLuint GetProgramID() const;
+    GLint UniformLocation(const char *uniform) const;
 private:
-    // Members
     GLuint program;
     const char *vertexPath, *fragmentPath;
 
-    // Methods
     GLuint Load();
-    GLint UniformLocation(const char *uniform) const;
 };
 
 #endif //MINECRAFT_SHADER_H

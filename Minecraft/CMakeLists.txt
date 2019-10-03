@@ -6,8 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_definitions(GLEW_STATIC)
 add_compile_definitions(MINECRAFT_DEBUG)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -pedantic")
+
+# TODO:
+#   Implement proper linux CMakeLists.txt
+#
 
 if (WIN32)
     include_directories(../Common/lib/glew-2.1.0/include)
@@ -26,4 +30,4 @@ if (WIN32)
     endif()
 endif (WIN32)
 
-add_executable(Minecraft src/main.cpp src/Minecraft.cpp src/Minecraft.h src/render/RenderMaster.cpp src/render/RenderMaster.h src/world/World.cpp src/world/World.h src/world/Chunk.cpp src/world/Chunk.h src/render/Shader.cpp src/render/Shader.h src/utils/FileUtils.cpp src/utils/FileUtils.h src/entity/Camera.cpp src/entity/Camera.h src/world/BlockFace.h src/utils/Vectors.h src/world/Block.cpp src/world/Block.h src/render/Texture.cpp src/render/Texture.h src/utils/math/DirectionVectors.cpp src/utils/math/DirectionVectors.h src/render/TextureAtlas.cpp src/render/TextureAtlas.h src/world/FullChunk.cpp src/world/FullChunk.h src/entity/Entity.cpp src/entity/Entity.h src/utils/math/SimplexNoise.cpp src/utils/math/SimplexNoise.h src/render/FontRenderer.cpp src/render/FontRenderer.h src/performance/ChunkStatistics.cpp src/performance/ChunkStatistics.h src/gui/Gui.h src/gui/ScaledResolution.cpp src/gui/ScaledResolution.h src/gui/GuiScreen.h src/gui/GuiDebug.cpp src/gui/GuiDebug.h)
+add_executable(Minecraft src/main.cpp src/Minecraft.cpp src/Minecraft.h src/render/RenderMaster.cpp src/render/RenderMaster.h src/world/World.cpp src/world/World.h src/world/Chunk.cpp src/world/Chunk.h src/render/Shader.cpp src/render/Shader.h src/utils/FileUtils.cpp src/utils/FileUtils.h src/entity/Camera.cpp src/entity/Camera.h src/world/BlockFace.h src/utils/Vectors.h src/world/Block.cpp src/world/Block.h src/render/Texture.cpp src/render/Texture.h src/utils/math/DirectionVectors.cpp src/utils/math/DirectionVectors.h src/render/TextureAtlas.cpp src/render/TextureAtlas.h src/world/FullChunk.cpp src/world/FullChunk.h src/entity/Entity.cpp src/entity/Entity.h src/world/gen/noise/SimplexNoise.cpp src/world/gen/noise/SimplexNoise.h src/render/FontRenderer.cpp src/render/FontRenderer.h src/performance/ChunkStatistics.cpp src/performance/ChunkStatistics.h src/gui/Gui.h src/gui/ScaledResolution.cpp src/gui/ScaledResolution.h src/gui/GuiScreen.h src/gui/GuiDebug.cpp src/gui/GuiDebug.h src/world/gen/IChunkGenerator.h src/world/gen/OverworldGenerator.cpp src/world/gen/OverworldGenerator.h src/world/gen/biome/IBiome.h src/world/gen/biome/BiomePlains.cpp src/world/gen/biome/BiomePlains.h src/world/gen/biome/BiomeExtremeHills.cpp src/world/gen/biome/BiomeExtremeHills.h src/utils/math/MathHelper.cpp src/utils/math/MathHelper.h)
