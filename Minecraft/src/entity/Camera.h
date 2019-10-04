@@ -9,6 +9,8 @@ class Camera : public Entity
 {
 public:
     Camera(glm::vec3 position);
+    ~Camera()
+    {}
 
     void Update();
     glm::mat4 GenerateViewMatrix() const;

@@ -11,6 +11,9 @@ class TextureAtlas
 {
 public:
     TextureAtlas(const std::string &filename, int block_texture_size);
+    ~TextureAtlas()
+    {}
+
     const std::vector<float> GetTexture(const glm::ivec2 coords) const;
     const glm::ivec2 CalculatePositionFromIndex(int n) const;
     const Texture &GetInternalTexture() const

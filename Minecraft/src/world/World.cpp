@@ -46,10 +46,10 @@ void World::LoadGenerator(std::unique_ptr<IChunkGenerator> gen)
     chunkQueue.push_front(worldGenerator->GenerateChunk(glm::ivec2(0, 0)));
 
     // Create the chunk generating thread
-    running = true;
     worldThread = new sf::Thread([this] {
         sf::sleep(sf::milliseconds(
-                100)); // sleep for some time, to let other stuff run before begining, almost used as a yield
+                100)); // sleep for some time, to let other stuff (GLTick) run before beggining, almost used as a yield
+        running = true;
         std::cout << "Started world generator thread" << std::endl;
         while (running) {
             Tick();
@@ -63,6 +63,9 @@ void World::LoadGenerator(std::unique_ptr<IChunkGenerator> gen)
     // First main thread tick
     GLTick();
     std::cout << "Loaded world generator \"" << worldGenerator->GetDisplayName() << "\"" << std::endl;
+
+    // Sleep some time to let the generator thread to start
+    sf::sleep(sf::milliseconds(200));
 }
 
 void World::Tick()

@@ -41,7 +41,6 @@ public:
 
 private:
     void Remesh();
-
     void TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,
                     const Block::Position &localPosition, const Block::Position &nextPosition);
     bool ShouldMakeBlockFaceAdjacentTo(const Block::Position &position);

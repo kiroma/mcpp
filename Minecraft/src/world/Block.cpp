@@ -7,14 +7,6 @@
 #include <iostream>
 #include <cstring>
 
-/*
- * TODO (at some point):
- *  Free all blocks allocated upon exiting.
- */
-
-// The actual allocated blocks
-Block::Block *blocks[2048];
-
 // Whoa, how deep does it get? Block::Block::Block::Block::Block::Block::Block::Block::...
 Block::Block::Block(unsigned short id, const std::vector<float> faceVertices[],
                     const std::vector<float> textureCoordinates[],
@@ -37,11 +29,8 @@ const std::vector<float> Block::Block::GetFaceVertices(int face) const
 const std::vector<float> Block::Block::GetTextureCoordinates(int direction) const
 { return textureCoordinates[direction]; }
 
-void Block::Database::Initialize()
+Block::Database::Database()
 {
-    // Clear some space for blocks
-    memset(blocks, 0, sizeof(blocks));
-
     // Register blocks
     RegisterBlock(0, nullptr, -1, "Air");
     RegisterBlock(1, nullptr, 0, "Stone");
@@ -66,7 +55,7 @@ void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertic
                                     const std::vector<float> *textureCoordinates,
                                     const char *displayName)
 {
-    std::vector<float> defaultFaceVertices[6] = {
+    const std::vector<float> defaultFaceVertices[6] = {
             BlockFace::rightFace,
             BlockFace::leftFace,
             BlockFace::topFace,
@@ -78,7 +67,7 @@ void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertic
     const std::vector<float> *fv = faceVertices == nullptr ? defaultFaceVertices : faceVertices;
     const std::vector<float> *tc = textureCoordinates;
 
-    blocks[id] = new Block(id, fv, tc, displayName);
+    blocks[id] = std::make_unique<Block>(id, fv, tc, displayName);
 }
 
 void Block::Database::RegisterBlock(int id, const std::vector<float> *faceVertices,

@@ -17,6 +17,7 @@ Texture::Texture(const char *filename)
     }
 
     // Generate the texture
+    glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
 
@@ -28,9 +29,10 @@ Texture::Texture(const char *filename)
 
     // Load the data into the texture buffer
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glDisable(GL_TEXTURE_2D);
 
     // Delete data after it hsa been used
-    delete[] data;
+    delete data;
 }
 
 Texture::~Texture()

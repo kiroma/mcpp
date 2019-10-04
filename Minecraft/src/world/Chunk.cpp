@@ -16,7 +16,7 @@
 
 Chunk::Chunk(World *world, FullChunk *parent, int section_number)
         : world(*world), parent(*parent), needsRebuild(true), sectionNumber(section_number), count(0), loaded(false)
-{ ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::CREATE); }
+{ Minecraft::GetInstance().GetChunkStatistics().RegisterChunkUpdate(ChunkStats::CREATE); }
 
 // --------------------------------------------------------------
 //  Destructor: Clean up
@@ -39,7 +39,7 @@ Chunk::~Chunk()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::DESTROY);
+    Minecraft::GetInstance().GetChunkStatistics().RegisterChunkUpdate(ChunkStats::DESTROY);
 }
 
 void Chunk::Load()
@@ -77,7 +77,7 @@ void Chunk::Load()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::LOAD);
+    Minecraft::GetInstance().GetChunkStatistics().RegisterChunkUpdate(ChunkStats::LOAD);
 }
 
 // --------------------------------------------------------------
@@ -167,12 +167,13 @@ void Chunk::Remesh()
     indicesIndex = 0;
 
     DirectionVectors vectors;
+    Block::Database &database = (Block::Database &) Minecraft::GetInstance().GetBlockDatabase();
     for (int y = 0; y < MINECRAFT_CHUNK_SIZE; y++) {
         for (int x = 0; x < MINECRAFT_CHUNK_SIZE; x++) {
             for (int z = 0; z < MINECRAFT_CHUNK_SIZE; z++) {
                 const Block::Position pos(x, y, z);
                 const Block::State state = GetChunkState(pos);
-                const Block::Block &block = Block::Database::GetBlock(state.id);
+                const Block::Block &block = database.GetBlock(state.id);
 
                 if (state.id == 0) {
                     continue;
@@ -218,7 +219,7 @@ void Chunk::Remesh()
     glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(float), &textureCoords[0], GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    ChunkStatistics::RegisterChunkUpdate(ChunkStatistics::REMESH);
+    Minecraft::GetInstance().GetChunkStatistics().RegisterChunkUpdate(ChunkStats::REMESH);
 }
 
 void Chunk::TryAddFace(const std::vector<float> &faceVertices, const std::vector<float> &texCoords,

@@ -1,11 +1,8 @@
 #include "ChunkStatistics.h"
+
 #include "../Minecraft.h"
 
-int tupdateC, tupdateD, tupdateL, tupdateR;
-int updateC, updateD, updateL, updateR;
-float dtime = 0;
-
-void ChunkStatistics::Update()
+void ChunkStats::Statistics::Update()
 {
     dtime += Minecraft::GetInstance().GetDeltaTime();
 
@@ -22,7 +19,7 @@ void ChunkStatistics::Update()
     }
 }
 
-void ChunkStatistics::RegisterChunkUpdate(UpdateType type)
+void ChunkStats::Statistics::RegisterChunkUpdate(ChunkStats::UpdateType type)
 {
     switch (type) {
         case CREATE:
@@ -42,7 +39,7 @@ void ChunkStatistics::RegisterChunkUpdate(UpdateType type)
     }
 }
 
-int ChunkStatistics::GetChunkUpdates(UpdateType type)
+int ChunkStats::Statistics::GetChunkUpdates(ChunkStats::UpdateType type)
 {
     switch (type) {
         case CREATE:

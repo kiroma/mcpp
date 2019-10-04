@@ -1,25 +1,32 @@
 #ifndef MINECRAFT_RENDERMASTER_H
 #define MINECRAFT_RENDERMASTER_H
 
-class Shader;
-class Camera;
+#include "../entity/Camera.h"
+#include "Shader.h"
+#include "TextureAtlas.h"
+
 class Texture;
-class TextureAtlas;
+
 class World;
 
+#include <memory>
 #include <mat4x4.hpp>
 
 #define MC_RENDER_PASSES 2
 
 class RenderMaster
 {
+    void RenderChunks(const World &world);
+    void RenderGUI();
+
 public:
     RenderMaster();
-    ~RenderMaster();
+    ~RenderMaster()
+    {}
 
     void RenderWorld(World &world);
     void SubmitProjection(const glm::mat4 projection) const;
-    void LoadCamera(Camera *camera);
+    void LoadCamera(std::unique_ptr<Camera> camera);
 
     const Shader &GetCurrentShader() const
     { return *shaderSolidBlock; }
@@ -31,14 +38,10 @@ public:
     { return cameraLoaded; }
 
 private:
-    Shader *shaderSolidBlock;
-    TextureAtlas *textureSolidBlocks;
-    Camera *camera;
+    std::unique_ptr<Shader> shaderSolidBlock;
+    std::unique_ptr<TextureAtlas> textureSolidBlocks;
+    std::unique_ptr<Camera> camera;
     bool cameraLoaded = false;
-
-    // World rendering routines
-    void RenderChunks(const World &world);
-    void RenderGUI();
 };
 
 #endif //MINECRAFT_RENDERMASTER_H

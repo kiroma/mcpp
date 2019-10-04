@@ -10,10 +10,24 @@ class ScaledResolution;
 class GuiScreen;
 
 class RenderMaster;
+
 class World;
+
+namespace Block
+{
+    class Database;
+}
+
+namespace ChunkStats
+{
+    class Statistics;
+}
 
 class Minecraft
 {
+    int StartGame();
+    void DrawSplashScreen() const;
+
 public:
     Minecraft();
     ~Minecraft();
@@ -29,42 +43,50 @@ public:
     void DisplayGuiScreen(GuiScreen *gui_screen);
 
     // Getters
-    static Minecraft &GetInstance();
     bool HasFocus()
     { return gameFocus; }
-    bool IsRunning() const volatile
+    bool IsRunning() const
     { return running; }
-    const RenderMaster &GetMasterRenderer() const
-    { return *masterRenderer; }
-    const World &GetCurrentWorld() const
-    { return *world; }
     float GetDeltaTime() const
     { return deltaTime; }
-    const sf::RenderWindow &GetWindow() const
-    { return *window; }
     float GetDebugFPS() const
     { return 1.0f / deltaTime; }
-    ScaledResolution &GetScaledResolution() const
-    { return *scaledRes; }
+    const sf::RenderWindow &GetWindow() const
+    { return *window; }
     GuiScreen *GetCurrentGUIScreen() const
     { return currentScreen; }
 
+    RenderMaster &GetMasterRenderer() const
+    { return *masterRenderer; }
+    World &GetCurrentWorld() const
+    { return *world; }
+    ScaledResolution &GetScaledResolution() const
+    { return *scaledRes; }
+    Block::Database &GetBlockDatabase() const
+    { return *blockDatabase; }
+    ChunkStats::Statistics &GetChunkStatistics() const
+    { return *chunkStatistics; }
+
+    static Minecraft &GetInstance();
+
 private:
-    int StartGame();
-
+    // Game state
     bool running;
-    bool input[4096];
     bool gameFocus;
-    glm::vec2 mousePosition;
     float deltaTime;
-
-    RenderMaster *masterRenderer;
-    World *world;
-    ScaledResolution *scaledRes;
-
-    sf::RenderWindow *window;
-
+    std::array<bool, 4096> input;
+    glm::vec2 mousePosition;
     GuiScreen *currentScreen = nullptr;
+
+    // Game stuff
+    std::unique_ptr<RenderMaster> masterRenderer;
+    std::unique_ptr<World> world;
+    std::unique_ptr<ScaledResolution> scaledRes;
+    std::unique_ptr<Block::Database> blockDatabase;
+    std::unique_ptr<ChunkStats::Statistics> chunkStatistics;
+
+    // SFML window
+    sf::RenderWindow *window;
 };
 
 #endif //MINECRAFT_MINECRAFT_H

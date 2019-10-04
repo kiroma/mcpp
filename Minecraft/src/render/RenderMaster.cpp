@@ -19,19 +19,9 @@
 RenderMaster::RenderMaster()
 {
     // Load textures and shaders
-    textureSolidBlocks = new TextureAtlas("../res/textures/atlas.png", 16);
-    shaderSolidBlock = new Shader("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
+    textureSolidBlocks = std::make_unique<TextureAtlas>("../res/textures/atlas.png", 16);
+    shaderSolidBlock = std::make_unique<Shader>("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
     glUniform1i(shaderSolidBlock->UniformLocation("main_texture"), 0);
-
-    // Initialize the font renderer
-    FontRenderer::Inititalize("../res/textures/font/ascii.png");
-}
-
-RenderMaster::~RenderMaster()
-{
-    delete textureSolidBlocks;
-    delete shaderSolidBlock;
-    delete camera;
 }
 
 // --------------------------------------------------------------
@@ -134,8 +124,8 @@ void RenderMaster::RenderGUI()
     }
 }
 
-void RenderMaster::LoadCamera(Camera *camera)
+void RenderMaster::LoadCamera(std::unique_ptr<Camera> camera)
 {
-    if (camera == nullptr) cameraLoaded = false; else cameraLoaded = true;
-    this->camera = camera;
+    cameraLoaded = true;
+    this->camera.swap(camera);
 }

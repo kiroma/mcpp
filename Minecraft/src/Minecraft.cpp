@@ -8,6 +8,7 @@
 #include "world/gen/OverworldGenerator.h"
 #include "world/World.h"
 #include "world/Block.h"
+#include "render/FontRenderer.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -31,7 +32,8 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
     // Useful stuff
     switch (type) {
         case GL_DEBUG_TYPE_ERROR:
-            std::cout << "Error: \"" << message << "\" from 0x" << std::hex << source << " severity: 0x" << std::hex << severity << std::endl;
+            std::cout << "Error: \"" << message << "\" from 0x" << std::hex << source << " severity: 0x" << std::hex
+                      << severity << std::endl;
             //Minecraft::GetInstance().Shutdown();
             break;
         default:
@@ -41,19 +43,14 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 }
 
 Minecraft::Minecraft()
-        : running(false), masterRenderer(nullptr), world(nullptr)
+        : running(false)
 {
     instance = this;
-    memset(input, 0, sizeof(input));
+    input.fill(false);
 }
 
 Minecraft::~Minecraft()
-{
-    instance = nullptr;
-
-    delete masterRenderer;
-    delete world;
-}
+{ instance = nullptr; }
 
 // --------------------------------------------------------------
 //  Run game:
@@ -63,10 +60,10 @@ Minecraft::~Minecraft()
 int Minecraft::Run()
 {
     // Start game
-    running = true;
-    gameFocus = true;
     int i = StartGame();
     if (i != 0) return i;
+    running = true;
+    gameFocus = true;
 
     // Game loop
     sf::Clock clock;
@@ -122,17 +119,16 @@ int Minecraft::Run()
         auto mouseNew = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
         mousePosition += mousePos - mouseNew;
 
-        // Upload chunks in the world to their respective VAOs and VBOs
+        // Game logic
         world->GLTick();
+        chunkStatistics->Update();
 
-        // Update profilers and performance counters
-        ChunkStatistics::Update();
-
-        // :D
+        // Render
         masterRenderer->RenderWorld(*world);
         window->display();
     }
 
+    delete window;
     return 0;
 }
 
@@ -197,8 +193,11 @@ int Minecraft::StartGame()
     std::cout << "OpenGL " << glGetString(GL_VERSION) << " " << glGetString(GL_RENDERER) << " "
               << glGetString(GL_VENDOR) << " GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    scaledRes = new ScaledResolution(window->getSize().x, window->getSize().y);
+    scaledRes = std::make_unique<ScaledResolution>(window->getSize().x, window->getSize().y);
     scaledRes->SetScaleFactor(3);
+
+    FontRenderer::Inititalize("../res/textures/font/ascii.png");
+    DrawSplashScreen();
 
 #ifdef MINECRAFT_DEBUG
     glEnable(GL_DEBUG_OUTPUT);
@@ -212,21 +211,103 @@ int Minecraft::StartGame()
     std::cout << "==============================================" << std::endl;
 
     // Initialize stuff
-    masterRenderer = new RenderMaster;
-    Block::Database::Initialize();
-    world = new World(time(0));
+    masterRenderer = std::make_unique<RenderMaster>();
+    blockDatabase = std::make_unique<Block::Database>();
+    world = std::make_unique<World>(time(0));
+    chunkStatistics = std::make_unique<ChunkStats::Statistics>();
     world->LoadGenerator(std::make_unique<OverworldGenerator>());
+    chunkStatistics->Update();
 
-    // Spawn the camera
-    masterRenderer->LoadCamera(new Camera(glm::vec3(0, world->GetHighestPoint(glm::ivec2(0, 0)) + 4, 0)));
-
-    // Make sure we are in a consistent state
+    masterRenderer->LoadCamera(std::make_unique<Camera>(glm::vec3(0, world->GetHighestPoint(glm::ivec2(0, 0)) + 4, 0)));
     UpdateProjection();
-
-    // Initialize the GUI
     DisplayGuiScreen(new GuiDebug());
 
     return 0;
+}
+
+void Minecraft::DrawSplashScreen() const
+{
+    // Load the splash image
+    Texture texture("../res/textures/splash.png");
+    Shader shader("../res/shaders/font/vertex.glsl", "../res/shaders/font/fragment.glsl");
+    unsigned int vaoID, verticesID, textureCoordsID;
+
+    // Bind it to texture 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.GetID());
+    glPushMatrix();
+
+    // Draw!
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    shader.Enable();
+    glUniformMatrix4fv(shader.UniformLocation("matrix"), 1, false, glm::value_ptr(scaledRes->GenerateMatrix()));
+    glUniform1i(shader.UniformLocation("main_texture"), 0);
+    glUniform4f(shader.UniformLocation("main_color"), 1, 1, 1, 1);
+
+    glClearColor(1, 1, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // OpenGL call wall
+    glGenVertexArrays(1, &vaoID);
+    glGenBuffers(1, &verticesID);
+    glGenBuffers(1, &textureCoordsID);
+    glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+    glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
+    glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
+    glBindVertexArray(vaoID);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+    glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
+    glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, nullptr);
+
+    float w = texture.GetWidth();
+    float h = texture.GetHeight();
+    float x = scaledRes->GetScaledWidth() / 2 - w / 2;
+    float y = scaledRes->GetScaledHeight() / 2 - h / 2;
+
+    std::cout << x << ", " << y << " + " << w << " * " << h << std::endl;
+
+    const float vertices[] = {
+            x, y,
+            x + w, y,
+            x + w, y + h,
+            x, y + h
+    };
+
+    const float texturecoordinates[] = {
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, verticesID);
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, textureCoordsID);
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), texturecoordinates, GL_DYNAMIC_DRAW);
+
+    glDrawArrays(GL_QUADS, 0, 8);
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDeleteBuffers(1, &verticesID);
+    glDeleteBuffers(1, &textureCoordsID);
+    glDeleteVertexArrays(1, &vaoID);
+
+    //FontRenderer::DrawString("hello, world", glm::ivec2(0, 0));
+
+    // Restore state
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    glPopMatrix();
+
+    window->display();
 }
 
 // --------------------------------------------------------------
