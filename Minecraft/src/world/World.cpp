@@ -65,7 +65,7 @@ void World::LoadGenerator(std::unique_ptr<IChunkGenerator> gen)
     std::cout << "Loaded world generator \"" << worldGenerator->GetDisplayName() << "\"" << std::endl;
 
     // Sleep some time to let the generator thread to start
-    sf::sleep(sf::milliseconds(200));
+    while (!running) sf::sleep(sf::milliseconds(100));
 }
 
 void World::Tick()

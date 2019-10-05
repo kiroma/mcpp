@@ -5,10 +5,11 @@
 #include "gui/ScaledResolution.h"
 #include "gui/GuiScreen.h"
 #include "render/RenderMaster.h"
+#include "render/text/FontRenderer.h"
 #include "world/gen/OverworldGenerator.h"
 #include "world/World.h"
 #include "world/Block.h"
-#include "render/FontRenderer.h"
+#include "utils/exceptions/ReportedException.h"
 
 #include <GL/glew.h>
 #include <iostream>
@@ -60,72 +61,108 @@ Minecraft::~Minecraft()
 int Minecraft::Run()
 {
     // Start game
-    int i = StartGame();
-    if (i != 0) return i;
+    try {
+        int i = StartGame();
+        if (i != 0) return i;
+    } catch (ReportedException &e) {
+        std::cerr << "Reported exception thrown whilst starting game." << std::endl;
+        std::cerr << e.GetMessage() << std::endl;
+        std::cerr << "Source: " << e.GetSource() << std::endl;
+        std::cerr << "More details: " << std::endl << e.GetDetails() << std::endl;
+        return -1;
+    } catch (std::exception &e) {
+        std::cerr << "Unknown unhandled STL exception whilst starting game." << std::endl;
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
+
     running = true;
     gameFocus = true;
 
     // Game loop
-    sf::Clock clock;
-    while (running) {
-        // Event handling
-        sf::Event event;
-        while (window->pollEvent(event)) {
-            switch (event.type) {
-                case sf::Event::Closed:
-                    Shutdown();
-                    return false;
-                case sf::Event::Resized:
-                    UpdateProjection();
-                    scaledRes->RealResize(event.size.width, event.size.height);
-                    std::cout << "Window resized to " << (float) event.size.width << " * " << (float) event.size.height
-                              << std::endl;
-                    break;
-                case sf::Event::KeyPressed:
-                    Input(event.key.code, true);
-                    break;
-                case sf::Event::KeyReleased:
-                    Input(event.key.code, false);
-                    break;
-                case sf::Event::MouseButtonPressed:
-                    gameFocus = true;
-                    break;
-                case sf::Event::LostFocus:
-                    gameFocus = false;
-                    break;
-                default:
-                    break;
+    try {
+        sf::Clock clock;
+        while (running) {
+            // Event handling
+            sf::Event event;
+            while (window->pollEvent(event)) {
+                switch (event.type) {
+                    case sf::Event::Closed:
+                        Shutdown();
+                        return false;
+                    case sf::Event::Resized:
+                        UpdateProjection();
+                        scaledRes->RealResize(event.size.width, event.size.height);
+                        std::cout << "Window resized to " << (float) event.size.width << " * "
+                                  << (float) event.size.height
+                                  << std::endl;
+                        break;
+                    case sf::Event::KeyPressed:
+                        Input(event.key.code, true);
+                        currentScreen->KeyDown(event.key);
+                        break;
+                    case sf::Event::KeyReleased:
+                        Input(event.key.code, false);
+                        currentScreen->KeyUp(event.key);
+                        break;
+                    case sf::Event::MouseButtonPressed:
+                        gameFocus = true;
+                        currentScreen->MouseDown(event.mouseButton);
+                        break;
+                    case sf::Event::MouseButtonReleased:
+                        currentScreen->MouseUp(event.mouseButton);
+                        break;
+                    case sf::Event::LostFocus:
+                        gameFocus = false;
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            // Record the time the last tick took
+            deltaTime = clock.restart().asSeconds();
+
+            // Player input
+            auto mousePos = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
+
+            if (GetInput(sf::Keyboard::Key::Escape)) {
+                gameFocus = false;
+            }
+
+            if (gameFocus) {
+                window->setMouseCursorVisible(false);
+                sf::Mouse::setPosition(sf::Vector2i(window->getPosition().x + window->getSize().x / 2,
+                                                    window->getPosition().y + window->getSize().y / 2));
+            } else {
+                window->setMouseCursorVisible(true);
+            }
+
+            auto mouseNew = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
+            mousePosition += mousePos - mouseNew;
+
+            // Game logic
+            world->GLTick();
+            chunkStatistics->Update();
+
+            // Render
+            masterRenderer->RenderWorld(*world);
+            window->display();
         }
-
-        // Record the time the last tick took
-        deltaTime = clock.restart().asSeconds();
-
-        // Player input
-        auto mousePos = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
-
-        if (GetInput(sf::Keyboard::Key::Escape)) {
-            gameFocus = false;
-        }
-
-        if (gameFocus) {
-            window->setMouseCursorVisible(false);
-            sf::Mouse::setPosition(sf::Vector2i(window->getPosition().x + window->getSize().x / 2,
-                                                window->getPosition().y + window->getSize().y / 2));
-        } else {
-            window->setMouseCursorVisible(true);
-        }
-
-        auto mouseNew = glm::vec2((float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y);
-        mousePosition += mousePos - mouseNew;
-
-        // Game logic
-        world->GLTick();
-        chunkStatistics->Update();
-
-        // Render
-        masterRenderer->RenderWorld(*world);
-        window->display();
+    } catch (ReportedException &e) {
+        std::cerr << "Reported exception thrown during game runtime." << std::endl;
+        std::cerr << e.GetMessage() << std::endl;
+        std::cerr << "Source: " << e.GetSource() << std::endl;
+        std::cerr << "More details: " << std::endl << e.GetDetails() << std::endl;
+        return -1;
+    } catch (std::runtime_error &e) {
+        std::cerr << "Unhandled STL runtime exception during game runtime." << std::endl;
+        std::cerr << e.what() << std::endl;
+        return -1;
+    } catch (std::exception &e) {
+        std::cerr << "Unknown unhandled STL exception during game runtime." << std::endl;
+        std::cerr << e.what() << std::endl;
+        return -1;
     }
 
     delete window;
@@ -181,13 +218,13 @@ int Minecraft::StartGame()
     window = new sf::RenderWindow;
     window->create(sf::VideoMode(1440, 720), std::move("Minecraft C++"),
                    sf::Style::Default, settings);   // 2:1 aspect ratio
-    window->setFramerateLimit(120);
+    window->setFramerateLimit(144);
 
     GLenum error = glewInit();
     if (error != GLEW_NO_ERROR) {
-        std::cerr << "Unable to initialize GLEW: " << error << " \""
-                  << std::string((const char *) glewGetErrorString(error)) << "\".";
-        return error;
+        delete window;
+        throw ReportedException("Initializing OpenGL extensions while starting game.", "Unable to initialize GLEW",
+                                std::string((const char *) glewGetErrorString(error)));
     }
 
     std::cout << "OpenGL " << glGetString(GL_VERSION) << " " << glGetString(GL_RENDERER) << " "
@@ -196,7 +233,7 @@ int Minecraft::StartGame()
     scaledRes = std::make_unique<ScaledResolution>(window->getSize().x, window->getSize().y);
     scaledRes->SetScaleFactor(3);
 
-    FontRenderer::Inititalize("../res/textures/font/ascii.png");
+    fontRenderer = std::make_unique<FontRenderer>("../res/textures/font/ascii.png");
     DrawSplashScreen();
 
 #ifdef MINECRAFT_DEBUG
@@ -229,8 +266,13 @@ void Minecraft::DrawSplashScreen() const
 {
     // Load the splash image
     Texture texture("../res/textures/splash.png");
-    Shader shader("../res/shaders/font/vertex.glsl", "../res/shaders/font/fragment.glsl");
+    ShaderProgram shader;
     unsigned int vaoID, verticesID, textureCoordsID;
+
+    // Prepare our shader
+    shader.AttachShader(std::make_unique<Shader>(VERTEX, "../res/shaders/font/vertex.glsl"));
+    shader.AttachShader(std::make_unique<Shader>(FRAGMENT, "../res/shaders/font/fragment.glsl"));
+    shader.Build();
 
     // Bind it to texture 0
     glActiveTexture(GL_TEXTURE0);
@@ -271,8 +313,6 @@ void Minecraft::DrawSplashScreen() const
     float x = scaledRes->GetScaledWidth() / 2 - w / 2;
     float y = scaledRes->GetScaledHeight() / 2 - h / 2;
 
-    std::cout << x << ", " << y << " + " << w << " * " << h << std::endl;
-
     const float vertices[] = {
             x, y,
             x + w, y,
@@ -299,8 +339,6 @@ void Minecraft::DrawSplashScreen() const
     glDeleteBuffers(1, &verticesID);
     glDeleteBuffers(1, &textureCoordsID);
     glDeleteVertexArrays(1, &vaoID);
-
-    //FontRenderer::DrawString("hello, world", glm::ivec2(0, 0));
 
     // Restore state
     glDisable(GL_TEXTURE_2D);

@@ -9,5 +9,5 @@ uniform mat4 matrix;
 void main(void)
 {
     pass_texture_coords = textureCoords;
-    gl_Position = matrix * vec4(position, 0, 1);
+    gl_Position = matrix * vec4(position.xy, 0, 1);
 }

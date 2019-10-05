@@ -2,6 +2,7 @@
 #define MINECRAFT_FULLCHUNK_H
 
 class Chunk;
+
 class World;
 
 #include <ext.hpp>

@@ -1,6 +1,8 @@
 #ifndef MINECRAFT_GUI_H
 #define MINECRAFT_GUI_H
 
+#include "../render/text/FontRenderer.h"
+#include "../Minecraft.h"
 #include <ext.hpp>
 
 class Gui
@@ -12,6 +14,11 @@ public:
     { return size; }
     int Area() const
     { return size.x * size.y; }
+
+protected:
+    const Minecraft& minecraft = Minecraft::GetInstance();
+    FontRenderer& fontRenderer = minecraft.GetFontRenderer();
+    ChunkStats::Statistics &chunkStats = minecraft.GetChunkStatistics();
 
 private:
     glm::ivec2 pos, size;

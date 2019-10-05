@@ -16,7 +16,7 @@ public:
 protected:
     // Ugly hack to get a non-const world (because I'm too lazy to change it's constness in Minecraft.h)
     World &GetWorld()
-    { return (World&)Minecraft::GetInstance().GetCurrentWorld(); }
+    { return (World &) Minecraft::GetInstance().GetCurrentWorld(); }
 };
 
 #endif //MINECRAFT_IBIOME_H

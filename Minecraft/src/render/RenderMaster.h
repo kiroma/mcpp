@@ -2,7 +2,7 @@
 #define MINECRAFT_RENDERMASTER_H
 
 #include "../entity/Camera.h"
-#include "Shader.h"
+#include "shaders/ShaderProgram.h"
 #include "TextureAtlas.h"
 
 class Texture;
@@ -28,7 +28,7 @@ public:
     void SubmitProjection(const glm::mat4 projection) const;
     void LoadCamera(std::unique_ptr<Camera> camera);
 
-    const Shader &GetCurrentShader() const
+    const ShaderProgram &GetCurrentShader() const
     { return *shaderSolidBlock; }
     const TextureAtlas &GetTextureAtlas() const
     { return *textureSolidBlocks; }
@@ -38,7 +38,7 @@ public:
     { return cameraLoaded; }
 
 private:
-    std::unique_ptr<Shader> shaderSolidBlock;
+    std::unique_ptr<ShaderProgram> shaderSolidBlock;
     std::unique_ptr<TextureAtlas> textureSolidBlocks;
     std::unique_ptr<Camera> camera;
     bool cameraLoaded = false;

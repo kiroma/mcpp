@@ -32,7 +32,7 @@ Texture::Texture(const char *filename)
     glDisable(GL_TEXTURE_2D);
 
     // Delete data after it hsa been used
-    delete data;
+    delete[] data;
 }
 
 Texture::~Texture()

@@ -12,7 +12,8 @@ namespace ChunkStats
         ALL
     };
 
-    class Statistics {
+    class Statistics
+    {
     public:
         void Update();
         void RegisterChunkUpdate(UpdateType type);

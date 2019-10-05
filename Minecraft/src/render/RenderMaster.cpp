@@ -6,8 +6,8 @@
 #include "../world/FullChunk.h"
 #include "../world/World.h"
 #include "../world/Chunk.h"
-#include "FontRenderer.h"
-#include "Shader.h"
+#include "text/FontRenderer.h"
+#include "shaders/ShaderProgram.h"
 #include "Texture.h"
 #include "TextureAtlas.h"
 
@@ -20,7 +20,11 @@ RenderMaster::RenderMaster()
 {
     // Load textures and shaders
     textureSolidBlocks = std::make_unique<TextureAtlas>("../res/textures/atlas.png", 16);
-    shaderSolidBlock = std::make_unique<Shader>("../res/shaders/solid/vertex.glsl", "../res/shaders/solid/fragment.glsl");
+    shaderSolidBlock = std::make_unique<ShaderProgram>();
+    shaderSolidBlock->AttachShader(std::make_unique<Shader>(VERTEX, "../res/shaders/solid/vertex.glsl"));
+    shaderSolidBlock->AttachShader(std::make_unique<Shader>(FRAGMENT, "../res/shaders/solid/fragment.glsl"));
+    shaderSolidBlock->Build();
+
     glUniform1i(shaderSolidBlock->UniformLocation("main_texture"), 0);
 }
 

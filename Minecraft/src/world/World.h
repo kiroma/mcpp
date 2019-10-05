@@ -55,7 +55,7 @@ public:
                           MINECRAFT_CHUNK_SIZE);
     }
 
-    const SimplexNoise& GetNoiseGenerator()
+    const SimplexNoise &GetNoiseGenerator()
     { return *noiseGenerator; }
 
 private:

@@ -2,6 +2,7 @@
 #define MINECRAFT_CHUNK_H
 
 class World;
+
 class FullChunk;
 
 #include "Block.h"

@@ -2,6 +2,7 @@
 #define MINECRAFT_GUISCREEN_H
 
 #include "Gui.h"
+
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 
@@ -16,10 +17,10 @@ public:
     virtual void DrawScreen() = 0;
 
     // Events
-    virtual void MouseDown(sf::Mouse::Button button) = 0;
-    virtual void MouseUp(sf::Mouse::Button button) = 0;
-    virtual void KeyDown(sf::Keyboard::Key key) = 0;
-    virtual void KeyUp(sf::Keyboard::Key key) = 0;
+    virtual void MouseDown(sf::Event::MouseButtonEvent button) = 0;
+    virtual void MouseUp(sf::Event::MouseButtonEvent button) = 0;
+    virtual void KeyDown(sf::Event::KeyEvent key) = 0;
+    virtual void KeyUp(sf::Event::KeyEvent key) = 0;
 };
 
 #endif //MINECRAFT_GUISCREEN_H

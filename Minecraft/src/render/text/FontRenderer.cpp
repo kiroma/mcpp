@@ -1,28 +1,26 @@
 #include "FontRenderer.h"
 
-#include "../gui/ScaledResolution.h"
-#include "../utils/FileUtils.h"
-#include "../Minecraft.h"
-#include "Texture.h"
-#include "Shader.h"
+#include "../../gui/ScaledResolution.h"
+#include "../../utils/InputOutput.h"
+#include "../../Minecraft.h"
+#include "../shaders/ShaderProgram.h"
+#include "../Texture.h"
 
 #include <GL/glew.h>
 #include <iostream>
 
-Texture *texture;
-Shader *shader;
-
-unsigned int vaoID, verticesID, textureCoordsID;
-
-void FontRenderer::Inititalize(const char *texture_path)
+FontRenderer::FontRenderer(const char *texture_path)
 {
     // Initialize texture
-    texture = new Texture(texture_path);
+    texture = std::make_unique<Texture>(texture_path);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->GetID());
 
     // Initialize shader
-    shader = new Shader("../res/shaders/font/vertex.glsl", "../res/shaders/font/fragment.glsl");
+    shader = std::make_unique<ShaderProgram>();
+    shader->AttachShader(std::make_unique<Shader>(VERTEX, "../res/shaders/font/vertex.glsl"));
+    shader->AttachShader(std::make_unique<Shader>(FRAGMENT, "../res/shaders/font/fragment.glsl"));
+    shader->Build();
 
     // Initialize arrays (woah, look at that code wall)
     glGenVertexArrays(1, &vaoID);
@@ -43,10 +41,17 @@ void FontRenderer::Inititalize(const char *texture_path)
     glDisableVertexAttribArray(1);
 }
 
-void FontRenderer::DrawString(const char *text, glm::ivec2 pos)
+FontRenderer::~FontRenderer()
+{
+    glDeleteBuffers(1, &verticesID);
+    glDeleteBuffers(1, &textureCoordsID);
+    glDeleteVertexArrays(1, &vaoID);
+}
+
+void FontRenderer::DrawString(std::string text, glm::ivec2 pos)
 { DrawString(text, pos, sf::Color::White); }
 
-void FontRenderer::DrawString(const char *text, glm::ivec2 pos, sf::Color color)
+void FontRenderer::DrawString(std::string text, glm::ivec2 pos, sf::Color color)
 {
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
@@ -67,7 +72,7 @@ void FontRenderer::DrawString(const char *text, glm::ivec2 pos, sf::Color color)
     glUniform4f(shader->UniformLocation("main_color"), color.r, color.g, color.b, color.a);
 
     int x = pos.x;
-    for (const char *c = text; *c != '\0'; c++) {
+    for (auto c = text.begin(); c != text.end(); c++) {
         static const int CHARACTERS = texture->GetSize() / MINECRAFT_CHARACTER_SIZE;
         static const float CHARACTER_UNIT = (float) MINECRAFT_CHARACTER_SIZE / (float) texture->GetSize();
 
@@ -110,4 +115,13 @@ void FontRenderer::DrawString(const char *text, glm::ivec2 pos, sf::Color color)
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+}
+
+int FontRenderer::GetStringWidth(std::string text)
+{
+    int ret = 0;
+    for (auto c = text.begin(); c != text.end(); c++)
+        ret += MINECRAFT_CHARACTER_SIZE - 2;
+
+    return ret;
 }

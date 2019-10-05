@@ -13,6 +13,8 @@ class RenderMaster;
 
 class World;
 
+class FontRenderer;
+
 namespace Block
 {
     class Database;
@@ -66,6 +68,8 @@ public:
     { return *blockDatabase; }
     ChunkStats::Statistics &GetChunkStatistics() const
     { return *chunkStatistics; }
+    FontRenderer &GetFontRenderer() const
+    { return *fontRenderer; }
 
     static Minecraft &GetInstance();
 
@@ -84,6 +88,7 @@ private:
     std::unique_ptr<ScaledResolution> scaledRes;
     std::unique_ptr<Block::Database> blockDatabase;
     std::unique_ptr<ChunkStats::Statistics> chunkStatistics;
+    std::unique_ptr<FontRenderer> fontRenderer;
 
     // SFML window
     sf::RenderWindow *window;
