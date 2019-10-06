@@ -10,12 +10,12 @@ Texture::Texture(const char *filename)
     // Load the image
     const sf::Image img = [&](){
         sf::Image temp;
-        if(!temp.loadFromFile(filename))
-        {
+        if (!temp.loadFromFile(filename))
             throw std::runtime_error("Failed to load texture from \"" + std::string(filename) + "\".");
-        }
+
         return temp;
     }();
+    
     width = img.getSize().x;
     height = img.getSize().y;
 
