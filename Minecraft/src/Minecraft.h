@@ -1,8 +1,8 @@
 #ifndef MINECRAFT_MINECRAFT_H
 #define MINECRAFT_MINECRAFT_H
 
-#include <vec2.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <glm/vec2.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <SFML/Graphics.hpp>
 
 class ScaledResolution;

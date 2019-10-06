@@ -8,7 +8,7 @@ class FullChunk;
 #include "Block.h"
 
 #include <vector>
-#include <vec3.hpp>
+#include <glm/vec3.hpp>
 
 #define MINECRAFT_CHUNK_SIZE 16
 #define MINECRAFT_CHUNK_VBO_COUNT 2

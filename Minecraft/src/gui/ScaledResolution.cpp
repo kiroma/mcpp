@@ -1,6 +1,6 @@
 #include "ScaledResolution.h"
 
-#include <ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 
 ScaledResolution::ScaledResolution(int width, int height)
 { RealResize(width, height); }

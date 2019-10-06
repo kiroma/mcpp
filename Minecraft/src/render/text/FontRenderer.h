@@ -6,7 +6,7 @@ class Texture;
 class ShaderProgram;
 
 #include <SFML/Graphics/Color.hpp>
-#include <ext.hpp>
+#include <glm/ext.hpp>
 #include <memory>
 
 #define MINECRAFT_CHARACTER_SIZE 8

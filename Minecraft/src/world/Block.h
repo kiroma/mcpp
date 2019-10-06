@@ -5,7 +5,7 @@
 #include <string>
 #include <array>
 #include <memory>
-#include <glm.hpp>
+#include <glm/glm.hpp>
 
 namespace Block
 {

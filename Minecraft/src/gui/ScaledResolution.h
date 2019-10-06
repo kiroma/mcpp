@@ -1,7 +1,7 @@
 #ifndef MINECRAFT_SCALEDRESOLUTION_H
 #define MINECRAFT_SCALEDRESOLUTION_H
 
-#include <mat4x4.hpp>
+#include <glm/mat4x4.hpp>
 
 class ScaledResolution
 {

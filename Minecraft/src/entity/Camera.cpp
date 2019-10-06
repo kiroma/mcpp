@@ -2,7 +2,7 @@
 #include "../Minecraft.h"
 #include "../utils/math/DirectionVectors.h"
 
-#include <gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 #define MOVEMENT_SPEED ((float)5.0)

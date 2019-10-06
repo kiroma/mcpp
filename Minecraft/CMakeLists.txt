@@ -28,6 +28,13 @@ if (WIN32)
     elseif (CMAKE_BUILD_TYPE MATCHES Release)
         link_libraries(mingw32 glew32s opengl32 openal32 sfml-graphics sfml-window sfml-system sfml-audio)
     endif ()
+else()
+	find_package(GLEW REQUIRED)
+	find_package(glm REQUIRED)
+	find_package(SFML COMPONENTS graphics REQUIRED)
+	find_package(OpenGL REQUIRED)
 endif (WIN32)
 
 add_executable(Minecraft src/main.cpp src/Minecraft.cpp src/Minecraft.h src/render/RenderMaster.cpp src/render/RenderMaster.h src/world/World.cpp src/world/World.h src/world/Chunk.cpp src/world/Chunk.h src/render/shaders/ShaderProgram.cpp src/render/shaders/ShaderProgram.h src/utils/InputOutput.cpp src/utils/InputOutput.h src/entity/Camera.cpp src/entity/Camera.h src/world/BlockFace.h src/utils/Vectors.h src/world/Block.cpp src/world/Block.h src/render/Texture.cpp src/render/Texture.h src/utils/math/DirectionVectors.cpp src/utils/math/DirectionVectors.h src/render/TextureAtlas.cpp src/render/TextureAtlas.h src/world/FullChunk.cpp src/world/FullChunk.h src/entity/Entity.cpp src/entity/Entity.h src/world/gen/noise/SimplexNoise.cpp src/world/gen/noise/SimplexNoise.h src/render/text/FontRenderer.cpp src/render/text/FontRenderer.h src/performance/ChunkStatistics.cpp src/performance/ChunkStatistics.h src/gui/Gui.h src/gui/ScaledResolution.cpp src/gui/ScaledResolution.h src/gui/GuiScreen.h src/gui/GuiDebug.cpp src/gui/GuiDebug.h src/world/gen/IChunkGenerator.h src/world/gen/OverworldGenerator.cpp src/world/gen/OverworldGenerator.h src/world/gen/biome/IBiome.h src/world/gen/biome/BiomePlains.cpp src/world/gen/biome/BiomePlains.h src/world/gen/biome/BiomeExtremeHills.cpp src/world/gen/biome/BiomeExtremeHills.h src/utils/math/MathHelper.cpp src/utils/math/MathHelper.h src/render/shaders/Shader.cpp src/render/shaders/Shader.h src/render/shaders/ShaderType.h src/utils/exceptions/ReportedException.h src/render/text/TextRenderer.cpp src/render/text/TextRenderer.h)
+
+target_link_libraries(Minecraft PRIVATE GLEW::GLEW sfml-graphics OpenGL::GL)

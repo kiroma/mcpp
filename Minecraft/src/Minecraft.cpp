@@ -13,7 +13,6 @@
 
 #include <GL/glew.h>
 #include <iostream>
-#include <mem.h>
 
 Minecraft *instance = nullptr;
 

@@ -11,7 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-#include <vec3.hpp>
+#include <glm/vec3.hpp>
 #include <GL/glew.h>
 
 Chunk::Chunk(World *world, FullChunk *parent, int section_number)

@@ -1,9 +1,9 @@
 #ifndef MINECRAFT_ENTITY_H
 #define MINECRAFT_ENTITY_H
 
-#include <vec3.hpp>
-#include <mat4x4.hpp>
-#include <glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/glm.hpp>
 
 class Entity
 {

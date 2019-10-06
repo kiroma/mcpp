@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 #include <GL/glew.h>
-#include <glm.hpp>
+#include <glm/glm.hpp>
 
 class ShaderProgram
 {

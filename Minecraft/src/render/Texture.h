@@ -20,7 +20,6 @@ public:
 private:
     int width, height, channels;
     unsigned int id;
-    unsigned char *data;
 };
 
 #endif //MINECRAFT_TEXTURE_H

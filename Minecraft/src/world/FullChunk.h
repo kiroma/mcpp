@@ -5,7 +5,7 @@ class Chunk;
 
 class World;
 
-#include <ext.hpp>
+#include <glm/ext.hpp>
 #include "Block.h"
 
 // Change for custom height chunks

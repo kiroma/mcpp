@@ -10,7 +10,7 @@ class Texture;
 class World;
 
 #include <memory>
-#include <mat4x4.hpp>
+#include <glm/mat4x4.hpp>
 
 #define MC_RENDER_PASSES 2
 

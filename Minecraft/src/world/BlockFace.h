@@ -2,7 +2,7 @@
 #define MINECRAFT_BLOCKFACE_H
 
 #include <vector>
-#include <vec3.hpp>
+#include <glm/vec3.hpp>
 
 #define BLOCK_SIZE 1
 

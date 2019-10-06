@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 Entity::Entity(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
         : position(position), rotation(rotation), scale(scale)

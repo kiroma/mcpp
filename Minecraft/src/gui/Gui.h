@@ -3,7 +3,7 @@
 
 #include "../render/text/FontRenderer.h"
 #include "../Minecraft.h"
-#include <ext.hpp>
+#include <glm/ext.hpp>
 
 class Gui
 {
